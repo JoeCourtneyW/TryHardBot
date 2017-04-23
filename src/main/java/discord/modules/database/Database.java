@@ -152,7 +152,7 @@ public class Database implements IModule {
 				try {
 					PreparedStatement ps2;
 					String statement = "INSERT INTO `Users` values(?";
-					for (int i = 0; i < UserValue.values().length; i++) {
+					for (int i = 0; i < UserValue.values().length-1; i++) {
 						statement = statement + ",?";
 					}
 					statement = statement + ")";
