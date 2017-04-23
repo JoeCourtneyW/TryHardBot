@@ -67,9 +67,17 @@ public class Database implements IModule {
 		PreparedStatement createPlayers;
 		// PreparedStatement createColumns;
 		try {
+
+			String statement = "CREATE TABLE IF NOT EXISTS Users(";
+			for(UserValue v : UserValue.values()){
+				statement += v.name() + " ";
+				if(v.type == String.class)
+					statement += "varchar(50)";
+				statement += ", ";
+			}
+			statement += "PRIMARY KEY(SNOWFLAKE));";
 			createPlayers = connector.getConnection()
-					.prepareStatement("CREATE TABLE IF NOT EXISTS Users(" + "SNOWFLAKE varchar(50), "
-							+ "NAME varchar(50), " + "DISCRIMINATOR varchar(20), " + "CREDITS int," + " PRIMARY KEY(SNOWFLAKE)" + ");");
+					.prepareStatement(statement);
 			createPlayers.execute();
 			createPlayers.close();
 		} catch (SQLException e) {
