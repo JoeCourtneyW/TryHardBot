@@ -198,13 +198,15 @@ public class Database implements IModule {
 			HashMap<String, Object> cache = getCacheFor(snow);
 			if(!cache.get("LINKED_ACCOUNT").toString().equalsIgnoreCase("")){
 				cache.put("NAME", cache.get("DISCRIMINATOR"));
-				System.out.println("NAME | " + cache.get("DISCRIMINATOR"));
 				cache.put("DISCRIMINATOR", cache.get("LINKED_ACCOUNT"));
 				cache.put("LINKED_ACCOUNT", "");
 				cache.put("LINKED_PLATFORM", cache.get("REGION"));
 				cache.put("REGION", cache.get("RANK"));
 				cache.put("RANK", "Unranked");
 				getDatabaseCache().put(snow, cache);
+				for(String pv : getDatabaseCache().get(snow).keySet()){
+					System.out.println(pv + " | " + getDatabaseCache().get(snow).get(pv));
+				}
 				syncDatabase(snow);
 			}
 		}
