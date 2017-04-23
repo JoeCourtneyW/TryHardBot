@@ -368,8 +368,8 @@ public class StatCommands {
 		try {
 
 			webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
+			webClient.getOptions().setJavaScriptEnabled(false);
 			//webClient.getOptions().setThrowExceptionOnScriptError(false);
-
 			/* turn off annoying htmlunit warnings */
 	        java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(java.util.logging.Level.OFF);
 
