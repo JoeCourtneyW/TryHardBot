@@ -152,7 +152,7 @@ public class Database implements IModule {
 				try {
 					PreparedStatement ps2;
 					String statement = "INSERT INTO `Users` values(?";
-					for (int i = 0; i < UserValue.values().length-1; i++) {
+					for (int i = 0; i < UserValue.values().length; i++) {
 						statement = statement + ",?";
 					}
 					statement = statement + ")";
@@ -169,7 +169,6 @@ public class Database implements IModule {
 							continue;
 						}
 						if (pv.name().equalsIgnoreCase("SNOWFLAKE")) {
-							ps2.setString(i+1, snowflake);
 							continue;
 						}
 						if (pv.initialValue instanceof Integer) {
