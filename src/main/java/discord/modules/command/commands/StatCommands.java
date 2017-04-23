@@ -127,6 +127,9 @@ public class StatCommands {
 		Region(String display) {
 			this.display = display;
 		}
+		public String getDisplay(){
+			return display;
+		}
 	}
 
 	@CommandA(label = "stat", name = "Stat", description = "Find your Rocket League stats", category = Category.GENERAL, usage = ".stat [System] [Username]", alias = "stats")
@@ -361,19 +364,16 @@ public class StatCommands {
 	}
 
 	public static boolean lookupProfile(String user, String system) {
-		System.out.println("Lookup start");
 		final WebClient webClient = new WebClient();
 		try {
 
-			webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
+			//webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
 			//webClient.getOptions().setThrowExceptionOnScriptError(false);
 
 			/* turn off annoying htmlunit warnings */
 	        java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(java.util.logging.Level.OFF);
-	        
-	        System.out.println("Before webpage connect");
+
 			HtmlPage mainPage = webClient.getPage("http://rltracker.pro/");
-			System.out.println("Connected to webpage");
 
 			HtmlForm lookup = mainPage.getForms().get(0);
 			for (HtmlForm form : mainPage.getForms()) {
@@ -397,8 +397,8 @@ public class StatCommands {
 			webClient.close();
 				return true;
 		} catch (IOException ioe) {
-			webClient.close();
 			ioe.printStackTrace();
+			webClient.close();
 		}
 		return false;
 	}

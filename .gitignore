@@ -49,3 +49,8 @@ Temporary Items
 #Other
 target
 default-config.sly
+.idea/.name
+.idea/compiler.xml
+*.xml
+*.xml
+DiscordSync.iml
