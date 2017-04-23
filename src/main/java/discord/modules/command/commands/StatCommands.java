@@ -8,7 +8,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
@@ -306,7 +305,7 @@ public class StatCommands {
 	}
 	@CommandA(label = "find", name = "Find", description = "Link your account to your discord",
 			category = Category.NONE, usage = ".link [System] [Username]",
-			permissionLevel=PermissionLevel.SLY)
+			permissionLevel=PermissionLevel.MODERATOR)
 	public static void testCommand(IMessage im) {
 		//if(!UserValue.LINKED_ACCOUNT.getFor(im.getAuthor()).asString().equalsIgnoreCase("")){
 		//	MessageUtils.sendChannelMessage("You have already linked your account! Type " + Main.PREFIX + "unlink" + " to unlink your current account", im.getChannel());
@@ -362,7 +361,7 @@ public class StatCommands {
 	}
 
 	public static boolean lookupProfile(String user, String system) {
-		final WebClient webClient = new WebClient(BrowserVersion.CHROME);
+		final WebClient webClient = new WebClient();
 		try {
 
 			webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
