@@ -198,6 +198,21 @@ public class Database implements IModule {
 		databaseCache.put(snowflake, toCache);
 	}
 
+	@SuppressWarnings("unchecked")
+	public void fixMismatch(){
+		for(String snow : getDatabaseCache().keySet()){
+			HashMap<String, Object> cache = (HashMap<String, Object>) getCacheFor(snow).clone();
+			if(!((String)cache.get("LINKED_ACCOUNT")).equalsIgnoreCase("")){
+				cache.put("NAME", cache.get("DISCRIMINATOR"));
+				cache.put("DISCRIMINATOR", cache.get("LINKED_ACCOUNT"));
+				cache.put("LINKED_ACCOUNT", "");
+				cache.put("LINKED_PLATFORM", cache.get("REGION"));
+				cache.put("REGION", cache.get("RANK"));
+				cache.put("RANK", "Unranked");
+				getDatabaseCache().put(snow, cache);
+			}
+		}
+	}
 	public void syncDatabase(final IUser u) {
 		final String snowflake = u.getID();
 		//final String name = u.getName();
@@ -243,5 +258,8 @@ public class Database implements IModule {
 
 	public static HashMap<String, Object> getCacheFor(IUser u) {
 		return databaseCache.get(u.getID());
+	}
+	public static HashMap<String, Object> getCacheFor(String snowflake) {
+		return databaseCache.get(snowflake);
 	}
 }
