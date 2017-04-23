@@ -190,7 +190,7 @@ public class Database implements IModule {
 		}.start();
 		HashMap<String, Object> toCache = new HashMap<String, Object>();
 		for (int i = 0; i < UserValue.values().length; i++) {
-			
+			if(UserValue.values()[i] != UserValue.NAME && UserValue.values()[i] != UserValue.DISCRIMINATOR)
 			toCache.put(UserValue.values()[i].name(), UserValue.values()[i].initialValue);
 		}
 		toCache.put("NAME", u.getName());
