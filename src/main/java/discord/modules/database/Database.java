@@ -114,12 +114,7 @@ public class Database implements IModule {
 
 	public static boolean exists(String snowflake) {
 
-		for (HashMap<String, Object> pfile : databaseCache.values()) {
-			if (((String) pfile.get("SNOWFLAKE")).equalsIgnoreCase(snowflake)) {
-				return true;
-			}
-		}
-		return false;
+		return databaseCache.containsKey(snowflake);
 	}
 
 	public boolean exists(IUser u) {
@@ -198,12 +193,12 @@ public class Database implements IModule {
 		databaseCache.put(snowflake, toCache);
 	}
 
-	@SuppressWarnings("unchecked")
 	public void fixMismatch(){
 		for(String snow : getDatabaseCache().keySet()){
-			HashMap<String, Object> cache = (HashMap<String, Object>) getCacheFor(snow).clone();
-			if(!((String)cache.get("LINKED_ACCOUNT")).equalsIgnoreCase("")){
+			HashMap<String, Object> cache = getCacheFor(snow);
+			if(!cache.get("LINKED_ACCOUNT").toString().equalsIgnoreCase("")){
 				cache.put("NAME", cache.get("DISCRIMINATOR"));
+				System.out.println("NAME | " + cache.get("DISCRIMINATOR"));
 				cache.put("DISCRIMINATOR", cache.get("LINKED_ACCOUNT"));
 				cache.put("LINKED_ACCOUNT", "");
 				cache.put("LINKED_PLATFORM", cache.get("REGION"));
