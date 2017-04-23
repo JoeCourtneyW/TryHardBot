@@ -12,7 +12,6 @@ public class DatabaseListener{
 		Main.databaseModule.tryNewPlayer(event.getUser());
 	}
 	public static void oneTimeOnly(){
-		Main.databaseModule.fixMismatch();
 		/*for(IGuild g : Main.INSTANCE.client.getGuilds()){
 			if(g.getName().contains("Try Hard")){
 			for(IUser u : g.getUsers()){

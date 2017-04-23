@@ -55,7 +55,7 @@ public class Database implements IModule {
 		connector.connect();
 		createTables();
 		fillCache();
-		DatabaseListener.oneTimeOnly();
+		//DatabaseListener.oneTimeOnly();
 	}
 	/**
 	 * Access Cache, Only access this, Never query the database for results sync
@@ -191,22 +191,6 @@ public class Database implements IModule {
 		toCache.put("NAME", u.getName());
 		toCache.put("DISCRIMINATOR", u.getDiscriminator());
 		databaseCache.put(snowflake, toCache);
-	}
-
-	public void fixMismatch(){
-		for(String snow : getDatabaseCache().keySet()){
-			HashMap<String, Object> cache = getCacheFor(snow);
-			if(!cache.get("LINKED_ACCOUNT").toString().equalsIgnoreCase("")){
-				cache.put("NAME", cache.get("DISCRIMINATOR"));
-				cache.put("DISCRIMINATOR", cache.get("LINKED_ACCOUNT"));
-				cache.put("LINKED_ACCOUNT", "");
-				cache.put("LINKED_PLATFORM", cache.get("REGION"));
-				cache.put("REGION", cache.get("RANK"));
-				cache.put("RANK", "Unranked");
-				getDatabaseCache().put(snow, cache);
-				syncDatabase(snow);
-			}
-		}
 	}
 	public void syncDatabase(final IUser u) {
 		final String snowflake = u.getID();
