@@ -182,7 +182,8 @@ public class Database implements IModule {
 					ps2.execute();
 					ps2.close();
 				} catch (SQLException e) {
-					throw new DatabaseException("Unable to create new users row in table `User`");
+					e.printStackTrace();
+					throw new DatabaseException("Unable to create new users row in table `Users`");
 				}
 			}
 		}.start();
