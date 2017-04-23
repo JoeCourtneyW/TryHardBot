@@ -367,7 +367,7 @@ public class StatCommands {
 		final WebClient webClient = new WebClient();
 		try {
 
-			//webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
+			webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
 			//webClient.getOptions().setThrowExceptionOnScriptError(false);
 
 			/* turn off annoying htmlunit warnings */
