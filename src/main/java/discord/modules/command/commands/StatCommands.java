@@ -370,7 +370,7 @@ public class StatCommands {
 
 			webClient.getOptions().setUseInsecureSSL(true);
 			webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
-			//webClient.getOptions().setJavaScriptEnabled(false);
+			webClient.getOptions().setJavaScriptEnabled(false);
 			//webClient.getOptions().setThrowExceptionOnScriptError(false);
 			/* turn off annoying htmlunit warnings */
 	        java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(java.util.logging.Level.OFF);
@@ -381,21 +381,18 @@ public class StatCommands {
 			for (HtmlForm form : mainPage.getForms()) {
 				if (form.getActionAttribute().equalsIgnoreCase("/profiles/lookup")) {
 					lookup = form;
-					System.out.println("Lookup form found");
 					break;
 				}
 			}
 			final HtmlTextInput accountField = lookup.getInputByName("account");
 			final HtmlHiddenInput platformField = lookup.getInputByName("platform_id");
 			final HtmlElement button = lookup.getElementsByAttribute("div", "class", "send_form").get(0);
-			System.out.println("Found elements");
 			accountField.setText(user.replaceAll("%20", " "));
 
 			String platform_id = (system.length()-1) + "";
 			platformField.setValueAttribute(platform_id);
 
 			button.click(); //submit form
-			System.out.println("Button clicked");
 			webClient.close();
 				return true;
 		} catch (IOException ioe) {
