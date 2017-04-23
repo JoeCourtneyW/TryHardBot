@@ -210,6 +210,7 @@ public class Database implements IModule {
 				cache.put("REGION", cache.get("RANK"));
 				cache.put("RANK", "Unranked");
 				getDatabaseCache().put(snow, cache);
+				syncDatabase(snow);
 			}
 		}
 	}
@@ -251,7 +252,43 @@ public class Database implements IModule {
 			}
 		}.start();
 	}
-
+	public void syncDatabase(final String snowflake) {
+		//final String name = u.getName();
+		new Thread(){
+			public void run() {
+				try {
+					PreparedStatement ps2;
+					String statement = "UPDATE `Users` SET";
+					for (UserValue pv : UserValue.values()) {
+						if(pv != UserValue.SNOWFLAKE)
+						statement = statement + " `" + pv.name() + "`=?,";
+					}
+					statement = statement.substring(0, statement.lastIndexOf(',')) + " WHERE `SNOWFLAKE`=?";
+					ps2 = connector.getConnection().prepareStatement(statement);
+					for (int i = 0; i < UserValue.values().length; i++) {
+						UserValue pv = UserValue.values()[i];
+						if (pv.type == Integer.class) {
+							ps2.setInt(i+1, (Integer) databaseCache.get(snowflake).get(pv.name()));
+						} else if (pv.type == Double.class) {
+							if (databaseCache.get(snowflake).get(pv.name()) instanceof Integer) {
+								ps2.setDouble(i+1, (Integer) databaseCache.get(snowflake).get(pv.name()) + 0.0);
+							} else {
+								ps2.setDouble(i+1, (Double) databaseCache.get(snowflake).get(pv.name()) + 0.0);
+							}
+						} else {
+							ps2.setString(i+1, databaseCache.get(snowflake).get(pv.name()).toString());
+						}
+					}
+					ps2.setString(UserValue.values().length, snowflake);
+					ps2.executeUpdate();
+					ps2.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+					//throw new DatabaseException("Unable to sync " + name + "'s data");
+				}
+			}
+		}.start();
+	}
 	public static ConcurrentHashMap<String, HashMap<String, Object>> getDatabaseCache() {
 		return databaseCache;
 	}
