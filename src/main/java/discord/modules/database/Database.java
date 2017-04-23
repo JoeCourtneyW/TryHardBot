@@ -54,8 +54,8 @@ public class Database implements IModule {
 		connector.loadValues();
 		connector.connect();
 		createTables();
-		DatabaseListener.oneTimeOnly();
 		fillCache();
+		DatabaseListener.oneTimeOnly();
 	}
 	/**
 	 * Access Cache, Only access this, Never query the database for results sync
