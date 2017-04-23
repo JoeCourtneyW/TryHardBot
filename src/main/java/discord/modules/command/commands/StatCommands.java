@@ -303,8 +303,8 @@ public class StatCommands {
 		UserValue.LINKED_PLATFORM.setFor(im.getAuthor(), "");
 		UserValue.RANK.setFor(im.getAuthor(), "");
 	}
-	@CommandA(label = "find", name = "Find", description = "Link your account to your discord",
-			category = Category.NONE, usage = ".link [System] [Username]",
+	@CommandA(label = "find", name = "Find", description = "Find a rocket league account",
+			category = Category.NONE, usage = ".find [System] [Username]",
 			permissionLevel=PermissionLevel.MODERATOR)
 	public static void testCommand(IMessage im) {
 		//if(!UserValue.LINKED_ACCOUNT.getFor(im.getAuthor()).asString().equalsIgnoreCase("")){
@@ -313,7 +313,7 @@ public class StatCommands {
 		//}
 		String[] args = im.getContent().split(" ");
 		if (args.length < 3) {
-			MessageUtils.sendSyntax("Link", im.getChannel());
+			MessageUtils.sendSyntax("Find", im.getChannel());
 			return;
 		}
 		String system = args[1].toLowerCase();
@@ -371,18 +371,20 @@ public class StatCommands {
 	        java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(java.util.logging.Level.OFF);
 	        
 			HtmlPage mainPage = webClient.getPage("http://rltracker.pro/");
+			System.out.println("Connected to webpage");
 
 			HtmlForm lookup = mainPage.getForms().get(0);
 			for (HtmlForm form : mainPage.getForms()) {
 				if (form.getActionAttribute().equalsIgnoreCase("/profiles/lookup")) {
 					lookup = form;
+					System.out.println("Lookup form found");
 					break;
 				}
 			}
 			final HtmlTextInput accountField = lookup.getInputByName("account");
 			final HtmlHiddenInput platformField = lookup.getInputByName("platform_id");
 			final HtmlElement button = lookup.getElementsByAttribute("div", "class", "send_form").get(0);
-
+			System.out.println("Found elements");
 			accountField.setText(user.replaceAll("%20", " "));
 
 			String platform_id = (system.length()-1) + "";
@@ -395,6 +397,7 @@ public class StatCommands {
 			platformField.setValueAttribute(platform_id);
 
 			button.click(); //submit form
+			System.out.println("Button clicked");
 			webClient.close();
 				return true;
 		} catch (IOException ioe) {
