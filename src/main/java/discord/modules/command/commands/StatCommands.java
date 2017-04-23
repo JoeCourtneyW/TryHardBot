@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
+import com.gargoylesoftware.htmlunit.BrowserVersion;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -364,9 +365,10 @@ public class StatCommands {
 	}
 
 	public static boolean lookupProfile(String user, String system) {
-		final WebClient webClient = new WebClient();
+		final WebClient webClient = new WebClient(BrowserVersion.BEST_SUPPORTED);
 		try {
 
+			webClient.getOptions().setUseInsecureSSL(true);
 			webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
 			webClient.getOptions().setJavaScriptEnabled(false);
 			//webClient.getOptions().setThrowExceptionOnScriptError(false);
