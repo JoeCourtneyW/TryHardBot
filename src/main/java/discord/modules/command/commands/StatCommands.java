@@ -19,6 +19,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import discord.modules.command.Category;
 import discord.modules.command.CommandA;
 import discord.modules.command.PermissionLevel;
+import discord.modules.database.UserValue;
 import discord.utils.MessageUtils;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IRole;
@@ -274,9 +275,9 @@ public class StatCommands {
 		} catch (MissingPermissionsException | RateLimitException | DiscordException e) {
 			e.printStackTrace();
 		}
-		//UserValue.LINKED_ACCOUNT.setFor(im.getAuthor(), user);
-		//UserValue.LINKED_PLATFORM.setFor(im.getAuthor(), system);
-		//UserValue.RANK.setFor(im.getAuthor(), highestRank.toString());
+		UserValue.LINKED_ACCOUNT.setFor(im.getAuthor(), user);
+		UserValue.LINKED_PLATFORM.setFor(im.getAuthor(), system);
+		UserValue.RANK.setFor(im.getAuthor(), highestRank.toString());
 	}
 
 	@CommandA(label = "unlink", name = "Unlink", description = "Unlink your account from your discord", category = Category.GENERAL, usage = ".link [System] [Username]")
@@ -299,9 +300,9 @@ public class StatCommands {
 		}
 		MessageUtils.sendChannelMessage("You have unlinked your Rocket League account from your discord",
 				im.getChannel());
-		//UserValue.LINKED_ACCOUNT.setFor(im.getAuthor(), user);
-		//UserValue.LINKED_PLATFORM.setFor(im.getAuthor(), system);
-		//UserValue.RANK.setFor(im.getAuthor(), highestRank.toString());
+		UserValue.LINKED_ACCOUNT.setFor(im.getAuthor(), "");
+		UserValue.LINKED_PLATFORM.setFor(im.getAuthor(), "");
+		UserValue.RANK.setFor(im.getAuthor(), "");
 	}
 	@CommandA(label = "find", name = "Find", description = "Link your account to your discord",
 			category = Category.NONE, usage = ".link [System] [Username]",

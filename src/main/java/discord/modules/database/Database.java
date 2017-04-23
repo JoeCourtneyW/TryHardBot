@@ -52,10 +52,10 @@ public class Database implements IModule {
 	}
 	public void load(){
 		connector.loadValues();
-		//connector.connect();
-		//createTables();
-		//DatabaseListener.oneTimeOnly();
-		//fillCache();
+		connector.connect();
+		createTables();
+		DatabaseListener.oneTimeOnly();
+		fillCache();
 	}
 	/**
 	 * Access Cache, Only access this, Never query the database for results sync
