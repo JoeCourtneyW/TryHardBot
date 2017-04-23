@@ -370,7 +370,7 @@ public class StatCommands {
 
 			webClient.getOptions().setUseInsecureSSL(true);
 			webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
-			webClient.getOptions().setJavaScriptEnabled(false);
+			//webClient.getOptions().setJavaScriptEnabled(false);
 			//webClient.getOptions().setThrowExceptionOnScriptError(false);
 			/* turn off annoying htmlunit warnings */
 	        java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(java.util.logging.Level.OFF);
