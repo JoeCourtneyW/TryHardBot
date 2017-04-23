@@ -361,6 +361,7 @@ public class StatCommands {
 	}
 
 	public static boolean lookupProfile(String user, String system) {
+		System.out.println("Lookup start");
 		final WebClient webClient = new WebClient();
 		try {
 
@@ -370,6 +371,7 @@ public class StatCommands {
 			/* turn off annoying htmlunit warnings */
 	        java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(java.util.logging.Level.OFF);
 	        
+	        System.out.println("Before webpage connect");
 			HtmlPage mainPage = webClient.getPage("http://rltracker.pro/");
 			System.out.println("Connected to webpage");
 
@@ -388,12 +390,6 @@ public class StatCommands {
 			accountField.setText(user.replaceAll("%20", " "));
 
 			String platform_id = (system.length()-1) + "";
-			/*if (system.equalsIgnoreCase("PC")) Use length-1 for platform_id hyperlul
-				platform_id = "1";
-			else if (system.equalsIgnoreCase("PS4"))
-				platform_id = "2";
-			else if (system.equalsIgnoreCase("XBOX"))
-				platform_id = "3";*/
 			platformField.setValueAttribute(platform_id);
 
 			button.click(); //submit form
