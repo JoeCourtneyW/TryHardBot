@@ -158,7 +158,7 @@ public class Database implements IModule {
 					statement = statement + ")";
 					ps2 = connector.getConnection().prepareStatement(statement);
 					ps2.setString(1, snowflake);
-					for (int i = 0; i < (UserValue.values().length); i++) {
+					for (int i = 1; i < (UserValue.values().length); i++) {
 						UserValue pv = UserValue.values()[i];
 						if (pv.name().equalsIgnoreCase("NAME")) {
 							ps2.setString(i+1, name);
@@ -169,6 +169,7 @@ public class Database implements IModule {
 							continue;
 						}
 						if (pv.name().equalsIgnoreCase("SNOWFLAKE")) {
+							ps2.setString(i+1, snowflake);
 							continue;
 						}
 						if (pv.initialValue instanceof Integer) {
@@ -183,12 +184,13 @@ public class Database implements IModule {
 					ps2.close();
 				} catch (SQLException e) {
 					e.printStackTrace();
-					throw new DatabaseException("Unable to create new users row in table `Users`");
+					//throw new DatabaseException("Unable to create new users row in table `Users`");
 				}
 			}
 		}.start();
 		HashMap<String, Object> toCache = new HashMap<String, Object>();
 		for (int i = 0; i < UserValue.values().length; i++) {
+			
 			toCache.put(UserValue.values()[i].name(), UserValue.values()[i].initialValue);
 		}
 		toCache.put("NAME", u.getName());
@@ -198,13 +200,14 @@ public class Database implements IModule {
 
 	public void syncDatabase(final IUser u) {
 		final String snowflake = u.getID();
-		final String name = u.getName();
+		//final String name = u.getName();
 		new Thread(){
 			public void run() {
 				try {
 					PreparedStatement ps2;
 					String statement = "UPDATE `Users` SET";
 					for (UserValue pv : UserValue.values()) {
+						if(pv != UserValue.SNOWFLAKE)
 						statement = statement + " `" + pv.name() + "`=?,";
 					}
 					statement = statement.substring(0, statement.lastIndexOf(',')) + " WHERE `SNOWFLAKE`=?";
@@ -223,12 +226,12 @@ public class Database implements IModule {
 							ps2.setString(i+1, databaseCache.get(snowflake).get(pv.name()).toString());
 						}
 					}
-					ps2.setString(UserValue.values().length + 1, snowflake);
+					ps2.setString(UserValue.values().length, snowflake);
 					ps2.executeUpdate();
 					ps2.close();
 				} catch (SQLException e) {
 					e.printStackTrace();
-					throw new DatabaseException("Unable to sync " + name + "'s data");
+					//throw new DatabaseException("Unable to sync " + name + "'s data");
 				}
 			}
 		}.start();

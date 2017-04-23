@@ -15,8 +15,11 @@ public class DatabaseListener{
 	}
 	public static void oneTimeOnly(){
 		for(IGuild g : Main.INSTANCE.client.getGuilds()){
+			if(g.getName().contains("Try Hard")){
 			for(IUser u : g.getUsers()){
+				if(!u.isBot())
 				Main.databaseModule.tryNewPlayer(u);
+			}
 			}
 		}
 	}
