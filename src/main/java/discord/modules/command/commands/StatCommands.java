@@ -376,7 +376,7 @@ public class StatCommands {
 
 			webClient.getOptions().setUseInsecureSSL(true);
 			webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
-			webClient.getOptions().setJavaScriptEnabled(true);
+			webClient.getOptions().setDownloadImages(false);
 			//webClient.getOptions().setThrowExceptionOnScriptError(false);
 			/* turn off annoying htmlunit warnings */
 	        java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(java.util.logging.Level.OFF);
@@ -397,7 +397,7 @@ public class StatCommands {
 
 			String platform_id = (system.length()-1) + "";
 			platformField.setValueAttribute(platform_id);
-
+			webClient.getOptions().setJavaScriptEnabled(false);
 			button.click(); //submit form
 			webClient.close();
 		} catch (IOException ioe) {
