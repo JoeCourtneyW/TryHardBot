@@ -12,13 +12,14 @@ import sx.blah.discord.util.MessageBuilder;
 public class MessageUtils {
 
 	public static IMessage sendChannelMessage(String message, IChannel channel){
+		IMessage im = Main.INSTANCE.client.getMessageByID("0");
 		try {
-			return new MessageBuilder(Main.INSTANCE.client).appendContent(message)
+			im = new MessageBuilder(Main.INSTANCE.client).appendContent(message)
 			.withChannel(channel).build();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return null;
+		return im;
 	}
 	public static void sendPrivateMessage(String message, IUser user){
 		try {

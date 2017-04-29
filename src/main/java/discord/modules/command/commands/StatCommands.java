@@ -3,6 +3,8 @@ package discord.modules.command.commands;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import org.jsoup.Jsoup;
@@ -256,9 +258,10 @@ public class StatCommands {
 			List<IRole> roles = im.getAuthor().getRolesForGuild(im.getGuild());
 			roleloop: for (IRole r : roles) {
 				for (Rank rank : Rank.values()) {
-					if (r.getName().contains(rank.getString().split(" ")[0]))
+					if (r.getName().contains(rank.getString().split(" ")[0])) {
 						im.getAuthor().removeRole(r);
-					break roleloop;
+						break roleloop;
+					}
 				}
 			}
 			if (im.getGuild().getRolesByName("New Member").size() > 0)
@@ -270,9 +273,9 @@ public class StatCommands {
 		} catch (MissingPermissionsException | RateLimitException | DiscordException e) {
 			e.printStackTrace();
 		}
-		if (highestRank.val > Rank.DIAMOND_III.val) {
+		//if (highestRank.val > Rank.DIAMOND_III.val) {
 			//TODO: notify online admins
-		}
+		//}
 		try {
 			m.edit(im.getAuthor().mention() + ", you have linked your discord account to " + user + " on " + system);
 		} catch (MissingPermissionsException | RateLimitException | DiscordException e) {
@@ -332,11 +335,14 @@ public class StatCommands {
 			return;
 		}
 		system = system.toUpperCase();
-		String user = args[2];
+		String user;
+		StringBuilder u = new StringBuilder(args[2]);
 		for (int i = 2; i < args.length; i++) {
 			if (i != 2)
-				user += "%20" + args[i];
+				u.append("%20");
+				u.append(args[i]);
 		}
+		user = u.toString().trim();
 		IMessage m = MessageUtils.sendChannelMessage("Loading...", im.getChannel());
 			String systemLink = system.toLowerCase();
 			if (systemLink.equalsIgnoreCase("pc"))
@@ -352,7 +358,7 @@ public class StatCommands {
 					
 				}
 				}catch(IOException | MissingPermissionsException | RateLimitException | DiscordException e){
-				
+				e.printStackTrace();
 			}
 	}
 	/*
@@ -360,17 +366,17 @@ public class StatCommands {
 	 * | Rating 670 ranking_percents | Top 57.05% matches | 143 Matches
 	 * 
 	 */
-	public static String getDataFromDiv(Element div, String className) {
+	private static String getDataFromDiv(Element div, String className) {
 		return div.getElementsByClass(className).get(0).text();
 	}
 
-	public static boolean lookupProfile(String user, String system) {
+	private static void lookupProfile(String user, String system) {
 		final WebClient webClient = new WebClient(BrowserVersion.BEST_SUPPORTED);
 		try {
 
 			webClient.getOptions().setUseInsecureSSL(true);
 			webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
-			webClient.getOptions().setJavaScriptEnabled(false);
+			webClient.getOptions().setJavaScriptEnabled(true);
 			//webClient.getOptions().setThrowExceptionOnScriptError(false);
 			/* turn off annoying htmlunit warnings */
 	        java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(java.util.logging.Level.OFF);
@@ -394,11 +400,18 @@ public class StatCommands {
 
 			button.click(); //submit form
 			webClient.close();
-				return true;
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 			webClient.close();
 		}
-		return false;
+	}
+
+	public String getUserFromURL(String url) {
+		String regex = "http://steamcommunity.com/[a-z]+/(.+)";
+		Pattern pattern = Pattern.compile(regex);
+		Matcher matcher = pattern.matcher(url);
+		if (matcher.matches())
+			return matcher.group(1);
+		return "";
 	}
 }
