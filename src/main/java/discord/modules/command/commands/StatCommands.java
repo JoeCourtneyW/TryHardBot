@@ -211,7 +211,7 @@ public class StatCommands {
 				user += "%20" + args[i];
 		}
 		user = user.trim();
-		if(user.startsWith("https://") || user.startsWith("http://")){
+		if(user.startsWith("https:") || user.startsWith("http:")){
 			MessageUtils.sendChannelMessage("Enter only your steam ID, not the link",
 					im.getChannel());
 			return;
