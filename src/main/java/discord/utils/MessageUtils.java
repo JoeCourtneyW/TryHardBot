@@ -3,10 +3,7 @@ package discord.utils;
 import discord.Main;
 import discord.modules.command.CommandA;
 import discord.modules.command.Commands;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IPrivateChannel;
-import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.handle.obj.*;
 import sx.blah.discord.util.MessageBuilder;
 
 public class MessageUtils {
@@ -20,6 +17,15 @@ public class MessageUtils {
 			e.printStackTrace();
 		}
 		return im;
+	}
+	public static void stackTrace(Exception e){
+		IGuild g = Main.INSTANCE.client.getGuildByID("107131596355698688");
+		try{
+			new MessageBuilder(Main.INSTANCE.client).appendContent(e.getLocalizedMessage())
+					.withChannel(g.getChannelByID("309750962149392384")).build();
+		}catch (Exception ex) {
+			//Don't chain these stupid fucking exceptions
+		}
 	}
 	public static void sendPrivateMessage(String message, IUser user){
 		try {

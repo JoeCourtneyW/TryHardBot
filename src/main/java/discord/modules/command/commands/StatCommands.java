@@ -178,7 +178,7 @@ public class StatCommands {
 			}
 			MessageUtils.sendChannelMessage(sb.toString(), im.getChannel());
 		} catch (IOException e) {
-			e.printStackTrace();
+			MessageUtils.stackTrace(e);
 		}
 	}
 
@@ -253,7 +253,7 @@ public class StatCommands {
 						.getRankFromString(getDataFromDiv(season4.getElementsByClass(p.getDiv()).get(0), "tier_name")));
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			MessageUtils.stackTrace(e);
 		}
 		for (Rank r : ranks.values()) {
 			if (r.val > highestRank.val)
@@ -278,7 +278,7 @@ public class StatCommands {
 			im.getAuthor().addRole(im.getGuild().getRolesByName(role).get(0));
 			im.getAuthor().addRole(im.getGuild().getRolesByName(system).get(0));
 		} catch (MissingPermissionsException | RateLimitException | DiscordException e) {
-			e.printStackTrace();
+			MessageUtils.stackTrace(e);
 		}
 		//if (highestRank.val > Rank.DIAMOND_III.val) {
 			//TODO: notify online admins
@@ -286,7 +286,7 @@ public class StatCommands {
 		try {
 			m.edit(im.getAuthor().mention() + ", you have linked your discord account to " + user + " on " + system);
 		} catch (MissingPermissionsException | RateLimitException | DiscordException e) {
-			e.printStackTrace();
+			MessageUtils.stackTrace(e);
 		}
 		UserValue.LINKED_ACCOUNT.setFor(im.getAuthor(), user);
 		UserValue.LINKED_PLATFORM.setFor(im.getAuthor(), system);
@@ -309,7 +309,7 @@ public class StatCommands {
 			im.getAuthor().removeRole(im.getGuild().getRolesByName("PC").get(0));
 			im.getAuthor().removeRole(im.getGuild().getRolesByName("XBOX").get(0));
 		} catch (MissingPermissionsException | RateLimitException | DiscordException e) {
-			e.printStackTrace();
+			MessageUtils.stackTrace(e);
 		}
 		MessageUtils.sendChannelMessage("You have unlinked your Rocket League account from your discord",
 				im.getChannel());
@@ -365,7 +365,7 @@ public class StatCommands {
 					
 				}
 				}catch(IOException | MissingPermissionsException | RateLimitException | DiscordException e){
-				e.printStackTrace();
+				MessageUtils.stackTrace(e);
 			}
 	}
 	/*
@@ -408,7 +408,7 @@ public class StatCommands {
 			button.click(); //submit form
 			webClient.close();
 		} catch (IOException ioe) {
-			ioe.printStackTrace();
+			MessageUtils.stackTrace(ioe);
 			webClient.close();
 		}
 	}
