@@ -205,13 +205,14 @@ public class StatCommands {
 			return;
 		}
 		system = system.toUpperCase();
-		String user = args[2];
+		StringBuilder userB = new StringBuilder();
 		for (int i = 2; i < args.length; i++) {
 			if (i != 2)
-				user += "%20" + args[i];
+				userB.append("%20");
+			userB.append(args[i]);
 		}
-		user = user.trim();
-		if(user.startsWith("https:") || user.startsWith("http:")){
+		String user = userB.toString().trim();
+		if(user.toLowerCase().startsWith("https://") || user.toLowerCase().startsWith("http://")){
 			MessageUtils.sendChannelMessage("Enter only your steam ID, not the link",
 					im.getChannel());
 			return;
