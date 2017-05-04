@@ -210,6 +210,12 @@ public class StatCommands {
 			if (i != 2)
 				user += "%20" + args[i];
 		}
+		user = user.trim();
+		if(user.startsWith("https://") || user.startsWith("http://")){
+			MessageUtils.sendChannelMessage("Enter only your steam ID, not the link",
+					im.getChannel());
+			return;
+		}
 		Rank highestRank = Rank.UNRANKED;
 		HashMap<Playlist, Rank> ranks = new HashMap<Playlist, Rank>();
 		IMessage m = MessageUtils.sendChannelMessage("Loading...", im.getChannel());
