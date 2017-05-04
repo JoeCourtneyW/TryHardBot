@@ -21,7 +21,7 @@ public class MessageUtils {
 	public static void stackTrace(Exception e){
 		IGuild g = Main.INSTANCE.client.getGuildByID("107131596355698688");
 		try{
-			new MessageBuilder(Main.INSTANCE.client).appendContent(e.getLocalizedMessage())
+			new MessageBuilder(Main.INSTANCE.client).appendContent(e.getMessage())
 					.withChannel(g.getChannelByID("309750962149392384")).build();
 		}catch (Exception ex) {
 			//Don't chain these stupid fucking exceptions
