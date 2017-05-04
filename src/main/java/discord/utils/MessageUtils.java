@@ -6,6 +6,9 @@ import discord.modules.command.Commands;
 import sx.blah.discord.handle.obj.*;
 import sx.blah.discord.util.MessageBuilder;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 public class MessageUtils {
 
 	public static IMessage sendChannelMessage(String message, IChannel channel){
@@ -21,7 +24,11 @@ public class MessageUtils {
 	public static void stackTrace(Exception e){
 		IGuild g = Main.INSTANCE.client.getGuildByID("107131596355698688");
 		try{
-			new MessageBuilder(Main.INSTANCE.client).appendContent(e.getMessage())
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			e.printStackTrace(pw);
+			String exception = sw.toString();
+			new MessageBuilder(Main.INSTANCE.client).appendContent(exception)
 					.withChannel(g.getChannelByID("309750962149392384")).build();
 		}catch (Exception ex) {
 			//Don't chain these stupid fucking exceptions
