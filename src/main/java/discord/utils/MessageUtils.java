@@ -27,7 +27,7 @@ public class MessageUtils {
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
 			e.printStackTrace(pw);
-			String exception = sw.toString();
+			String exception = pw.toString();
 			new MessageBuilder(Main.INSTANCE.client).appendContent(exception)
 					.withChannel(g.getChannelByID("309750962149392384")).build();
 		}catch (Exception ex) {
