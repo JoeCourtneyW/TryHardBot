@@ -28,6 +28,7 @@ public class MessageUtils {
 			String exception = ExceptionUtils.getStackTrace(e);
 			new MessageBuilder(Main.INSTANCE.client).appendContent(exception)
 					.withChannel(g.getChannelByID("309750962149392384")).build();
+			e.printStackTrace(); //Temp fix for this dumb bug
 		}catch (Exception ex) {
 			//Don't chain these stupid fucking exceptions
 		}
