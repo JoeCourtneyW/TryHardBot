@@ -36,7 +36,8 @@ public class CommandsHandler {
 				} catch (Exception e) {
 					MessageUtils.sendChannelMessage("An error occured in the execution of the command",
 							message.getChannel());
-					MessageUtils.stackTrace(e);
+					e.printStackTrace();
+					//MessageUtils.stackTrace(e);
 				}
 				}else{
 					MessageUtils.sendChannelMessage("You don't have permission to execute this command!", message.getChannel());
