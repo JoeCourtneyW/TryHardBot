@@ -7,6 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
+import discord.Main;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -83,6 +84,14 @@ public class StatCommands {
 			this.val = val;
 		}
 
+		public static Rank fromVal(int val){
+			for(Rank r : values()){
+				if(r.val == val){
+					return r;
+				}
+			}
+			return UNRANKED;
+		}
 		public static Rank getRankFromString(String r) {
 			return valueOf(r.toUpperCase().replaceAll(" ", "_"));
 		}
@@ -145,10 +154,10 @@ public class StatCommands {
 		String system = args[1].toLowerCase();
 		if (system.equalsIgnoreCase("pc"))
 			system = "steam";
-		else if (system.equalsIgnoreCase("psn"))
-			system = "ps4";
+		else if (system.equalsIgnoreCase("psn") || system.equalsIgnoreCase("ps4"))
+			system = "ps";
 		else if (!(system.equalsIgnoreCase("steam") || system.equalsIgnoreCase("xbox")
-				|| system.equalsIgnoreCase("ps4"))) {
+				|| system.equalsIgnoreCase("ps"))) {
 			MessageUtils.sendChannelMessage("You must set your system to either: [PS4, XBOX, or STEAM]",
 					im.getChannel());
 			return;
@@ -159,20 +168,26 @@ public class StatCommands {
 				user += "%20" + args[i];
 		}
 		try {
-			String link = "http://rltracker.pro/profiles/" + user + "/" + system;
+			String link = "https://rocketleague.tracker.network/profile/" + system + "/" + user;
 			Document doc = Jsoup.connect(link).get();
-			if (doc.getElementsByClass("player_avatar_col").size() < 1) {
+			Element season_table;
+			if (doc.getElementsByClass("season-table").size() < 1) {
 				MessageUtils.sendChannelMessage(
 						"That user does not exist on that platform! Usernames are CaSe-SenSItiVe", im.getChannel());
 				return;
 			}
-			Element season4 = doc.getElementsByClass("season4_div").get(0);
+			Element season4 = doc.getElementsByClass("card-table").get(0);
+			season4.getElementsByTag("img").get(0);
 			StringBuilder sb = new StringBuilder();
-			for (Playlist p : Playlist.values()) {
-				sb.append(p.getDisplay() + ": ");
-				Rank r = Rank
-						.getRankFromString(getDataFromDiv(season4.getElementsByClass(p.getDiv()).get(0), "tier_name"));
-				sb.append(r.getStringNum() + " ");
+			for(int i = 1; i < 5; i++){
+				sb.append(Playlist.values()[i].getDisplay());
+				sb.append(": ");
+				Element img = season4.getElementsByClass("img").get(i);
+				Pattern p = Pattern.compile("/Images/RL/ranked/s4-([0-9]+)");
+				Matcher m = p.matcher(img.html());
+				Rank r = Rank.fromVal(Integer.parseInt(m.group(1)));
+				sb.append(r.getStringNum());
+				sb.append(" ");
 				sb.append(r.getEmoji());
 				sb.append("\n");
 			}
@@ -181,13 +196,22 @@ public class StatCommands {
 			MessageUtils.stackTrace(e);
 		}
 	}
+	@CommandA(label = "me", name = "Me", description = "Find your stats on your linked account", category = Category.GENERAL, usage = ".me")
+	public static void meCommand(IMessage im) {
+		String account = UserValue.LINKED_ACCOUNT.getFor(im.getAuthor()).asString();
+		if(UserValue.LINKED_ACCOUNT.getFor(im.getAuthor()).asString().equalsIgnoreCase("")){
+			MessageUtils.sendChannelMessage("You must link an account using " + Main.PREFIX + "link before you can use this command!", im.getChannel());
+			return;
+		}
+		String system = UserValue.LINKED_PLATFORM.getFor(im.getAuthor()).asString();
 
+	}
 	@CommandA(label = "link", name = "Link", description = "Link your account to your discord", category = Category.GENERAL, usage = ".link [System] [Username]")
 	public static void linkCommand(IMessage im) {
-		//if(!UserValue.LINKED_ACCOUNT.getFor(im.getAuthor()).asString().equalsIgnoreCase("")){
-		//	MessageUtils.sendChannelMessage("You have already linked your account! Type " + Main.PREFIX + "unlink" + " to unlink your current account", im.getChannel());
-		//	return;
-		//}
+		if(!UserValue.LINKED_ACCOUNT.getFor(im.getAuthor()).asString().equalsIgnoreCase("")){
+			MessageUtils.sendChannelMessage("You have already linked your account! Type " + Main.PREFIX + "unlink" + " to unlink your current account", im.getChannel());
+			return;
+		}
 		String[] args = im.getContent().split(" ");
 		if (args.length < 3) {
 			MessageUtils.sendSyntax("Link", im.getChannel());
@@ -326,7 +350,7 @@ public class StatCommands {
 		//	return;
 		//}
 		String[] args = im.getContent().split(" ");
-		if (args.length < 3) {
+		if (args.length < 10) {
 			MessageUtils.sendSyntax("Find", im.getChannel());
 			return;
 		}
