@@ -61,8 +61,6 @@ public enum PermissionLevel {
 		return false;
 	}
 	public static boolean isUser(IUser u, String snowflake){
-		if(u.getID().equalsIgnoreCase(snowflake))
-			return true;
-		return false;
+		return u.getID().equalsIgnoreCase(snowflake);
 	}
 }
