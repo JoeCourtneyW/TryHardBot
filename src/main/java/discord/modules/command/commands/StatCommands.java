@@ -186,10 +186,16 @@ public class StatCommands {
 				sb.append(Playlist.values()[i].getDisplay());
 				sb.append(": ");
 				Element img = imgs.get(i);
-				System.out.println(img.outerHtml());
-				Pattern p = Pattern.compile("s4-([0-9]+)");
+				String html = img.outerHtml();
+				System.out.println(html);
+				Pattern p = Pattern.compile("([0-9]+)\\.png");
+
 				Matcher m = p.matcher(img.outerHtml());
-				Rank r = Rank.fromVal(Integer.parseInt(m.group(1)));
+				int rank = 0;
+				while(m.find()){
+					rank = Integer.parseInt(html.substring(m.start(), m.end()-4));
+				}
+				Rank r = Rank.fromVal(rank);
 				sb.append(r.getStringNum());
 				sb.append(" ");
 				sb.append(r.getEmoji());

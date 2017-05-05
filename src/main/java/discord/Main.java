@@ -2,6 +2,8 @@ package discord;
 
 import java.io.File;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import discord.modules.command.Commands;
 import discord.modules.config.Configuration;
