@@ -24,6 +24,7 @@ import discord.modules.command.CommandA;
 import discord.modules.command.PermissionLevel;
 import discord.modules.database.UserValue;
 import discord.utils.MessageUtils;
+import org.jsoup.select.Elements;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IRole;
 import sx.blah.discord.util.DiscordException;
@@ -179,10 +180,13 @@ public class StatCommands {
 			Element season4 = doc.getElementsByClass("card-table").get(0);
 			season4.getElementsByTag("img").get(0);
 			StringBuilder sb = new StringBuilder();
-			for(int i = 1; i < 5; i++){
+			Elements imgs = season4.getElementsByTag("img");
+			int start = imgs.size() > 4 ? 1 : 0; //There is sometimes an unranked row
+			for(int i = start; i < imgs.size(); i++){
 				sb.append(Playlist.values()[i].getDisplay());
 				sb.append(": ");
-				Element img = season4.getElementsByTag("img").get(i);
+				Element img = imgs.get(i);
+				System.out.println(img.outerHtml());
 				Pattern p = Pattern.compile("s4-([0-9]+)");
 				Matcher m = p.matcher(img.outerHtml());
 				Rank r = Rank.fromVal(Integer.parseInt(m.group(1)));
