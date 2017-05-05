@@ -3,6 +3,7 @@ package discord.utils;
 import discord.Main;
 import discord.modules.command.CommandA;
 import discord.modules.command.Commands;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import sx.blah.discord.handle.obj.*;
 import sx.blah.discord.util.MessageBuilder;
 
@@ -24,10 +25,7 @@ public class MessageUtils {
 	public static void stackTrace(Exception e){
 		IGuild g = Main.INSTANCE.client.getGuildByID("107131596355698688");
 		try{
-			StringWriter sw = new StringWriter();
-			PrintWriter pw = new PrintWriter(sw);
-			e.printStackTrace(pw);
-			String exception = pw.toString();
+			String exception = ExceptionUtils.getStackTrace(e);
 			new MessageBuilder(Main.INSTANCE.client).appendContent(exception)
 					.withChannel(g.getChannelByID("309750962149392384")).build();
 		}catch (Exception ex) {
