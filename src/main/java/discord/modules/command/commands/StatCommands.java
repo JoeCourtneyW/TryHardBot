@@ -183,8 +183,8 @@ public class StatCommands {
 				sb.append(Playlist.values()[i].getDisplay());
 				sb.append(": ");
 				Element img = season4.getElementsByTag("img").get(i);
-				Pattern p = Pattern.compile("/Images/RL/ranked/s4-([0-9]+)");
-				Matcher m = p.matcher(img.html());
+				Pattern p = Pattern.compile("s4-([0-9]+)");
+				Matcher m = p.matcher(img.outerHtml());
 				Rank r = Rank.fromVal(Integer.parseInt(m.group(1)));
 				sb.append(r.getStringNum());
 				sb.append(" ");
