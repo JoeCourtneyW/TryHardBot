@@ -39,6 +39,8 @@ public class Main {
 		dispatcher.registerListener(INSTANCE);
 		dispatcher.registerListener(new Welcome());
 		activateModules();
+
+
 	}
 
 	public Main(IDiscordClient dclient) {
