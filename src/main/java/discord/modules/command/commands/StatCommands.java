@@ -329,12 +329,12 @@ public class StatCommands {
     }
 
     private static HashMap<Playlist, Rank> getRanksFor(String user, String system) {
-        HashMap<Playlist, Rank> ranks = new HashMap<>();
+        HashMap<Playlist, Rank> ranks = new HashMap<>(); //TODO: Sort this hashmap so that the output is always in the same order
         try {
             String link = "https://rocketleague.tracker.network/profile/" + system + "/" + user;
             Document doc = Jsoup.connect(link).get();
             Element season_table;
-            if (doc.getElementsByClass("season-table").size() < 1) {
+            if (doc.getElementsByClass("season-table").size() < 1) { //Only existing users have a season-table
                 return null;
             }
             Element season4 = doc.getElementsByClass("card-table").get(0);
@@ -343,10 +343,13 @@ public class StatCommands {
             StringBuilder sb = new StringBuilder();
             Elements trs = season_table.getElementsByTag("tr");
             for (Element tr : trs) {
-                String play = tr.getElementsByTag("td").get(1).text();
+                Element cell = tr.getElementsByTag("td").get(1);
+                String play = cell.text();
                 Playlist list = Playlist.fromTrackerNetwork(play);
                 if (list == null)
                     continue;
+                if(cell.getElementsByTag("a").size() > 0) //Tracker Network likes to try to "estimate" your rank
+                    ranks.put(list, Rank.UNRANKED);
                 Element img = tr.getElementsByTag("img").get(0); //img
                 String html = img.outerHtml();
                 Pattern p = Pattern.compile("([0-9]+)\\.png");
@@ -354,10 +357,15 @@ public class StatCommands {
                 Matcher m = p.matcher(img.outerHtml());
                 int rank = 0;
                 while (m.find()) {
-                    rank = Integer.parseInt(html.substring(m.start(), m.end() - 4));
+                    rank = Integer.parseInt(html.substring(m.start(), m.end() - 4)); //We find the html for a <img> tag and get the png name
                 }
                 Rank r = Rank.fromVal(rank);
                 ranks.put(list, r);
+            }
+            for(Playlist p : Playlist.values()){
+                if(!ranks.containsKey(p)){
+                    ranks.put(p, Rank.UNRANKED); //There are no rows for playlists that the user hasn't played
+                }
             }
         } catch (IOException ioe) {
             ioe.printStackTrace();
