@@ -196,7 +196,7 @@ public class StatCommands {
 			StringBuilder sb = new StringBuilder();
 			Elements trs = season_table.getElementsByTag("tr");
 			for(Element tr : trs){
-				String play = trs.get(1).text();
+				String play = tr.getElementsByTag("td").get(1).text();
 				Playlist list = Playlist.fromTrackerNetwork(play);
 				if(list == null)
 					continue;
