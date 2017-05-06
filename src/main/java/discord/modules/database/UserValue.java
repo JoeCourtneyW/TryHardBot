@@ -48,7 +48,6 @@ public enum UserValue {
 				pfile.put(name(), o);
 			}
 		}
-		
 	}
 
 	public static boolean isValue(String v) {

@@ -177,7 +177,7 @@ public class StatCommands {
         StringBuilder userB = new StringBuilder();
         for (int i = 2; i < args.length; i++) {
             if (i != 2)
-                userB.append("%20");
+                userB.append(" ");
             userB.append(args[i]);
         }
         String user = userB.toString().trim();
@@ -188,9 +188,8 @@ public class StatCommands {
             MessageUtils.sendChannelMessage("That user does not exist on that platform! Usernames are CaSe-SenSItiVe", im.getChannel());
             return;
         }
-        sb.append("**");
         sb.append(user);
-        sb.append("'s** stats:");
+        sb.append("'s stats:");
         sb.append("\n");
         for (Playlist list : ranks.keySet()) {
             sb.append("**");
@@ -211,20 +210,21 @@ public class StatCommands {
     @CommandA(label = "me", name = "Me", description = "Find your stats on your linked account", category = Category.GENERAL, usage = ".me")
     public static void meCommand(IMessage im) {
         String account = UserValue.LINKED_ACCOUNT.getFor(im.getAuthor()).asString();
-        if (UserValue.LINKED_ACCOUNT.getFor(im.getAuthor()).asString().equalsIgnoreCase("")) {
+        if (account.equalsIgnoreCase("")) {
             MessageUtils.sendChannelMessage("You must link an account using " + Main.PREFIX + "link before you can use this command!", im.getChannel());
             return;
         }
         String system = UserValue.LINKED_PLATFORM.getFor(im.getAuthor()).asString();
         StringBuilder sb = new StringBuilder();
-        HashMap<Playlist, Rank> ranks = getRanksFor(account, system);
+
+        HashMap<Playlist, Rank> ranks = getRanksFor(account, formatSystem(system));
         if (ranks == null) {
             MessageUtils.sendChannelMessage("That user does not exist on that platform! Usernames are CaSe-SenSItiVe", im.getChannel());
             return;
         }
-        sb.append("**");
+        sb.append("");
         sb.append(account);
-        sb.append("'s** stats:");
+        sb.append("'s stats:");
         sb.append("\n");
         for (Playlist list : ranks.keySet()) {
             sb.append("**");
@@ -265,7 +265,7 @@ public class StatCommands {
         StringBuilder userB = new StringBuilder();
         for (int i = 2; i < args.length; i++) {
             if (i != 2)
-                userB.append("%20");
+                userB.append(" ");
             userB.append(args[i]);
         }
         String user = userB.toString().trim();
@@ -275,7 +275,7 @@ public class StatCommands {
         IMessage m = MessageUtils.sendChannelMessage("Loading...", im.getChannel());
         ranks = getRanksFor(user, system);
         if (ranks == null) {
-            MessageUtils.sendChannelMessage("That user does not exist on that platform! Usernames are CaSe-SenSItiVe", im.getChannel());
+            MessageUtils.editMessage(im, "That user does not exist on that platform! Usernames are CaSe-SenSItiVe");
             return;
         }
         for (Rank r : ranks.values()) {
@@ -294,18 +294,56 @@ public class StatCommands {
         //if (highestRank.val > Rank.DIAMOND_III.val) {
         //TODO: notify online admins
         //}
-        try {
-            m.edit(im.getAuthor().mention() + ", you have linked your discord account to " + user + " on " + system);
-        } catch (MissingPermissionsException | RateLimitException | DiscordException e) {
-            MessageUtils.stackTrace(e);
-        }
+        MessageUtils.editMessage(m, im.getAuthor().mention() + "you have linked your discord account to " + user + " on " + system);
+
         UserValue.LINKED_ACCOUNT.setFor(im.getAuthor(), user);
         UserValue.LINKED_PLATFORM.setFor(im.getAuthor(), system);
         UserValue.RANK.setFor(im.getAuthor(), highestRank.toString());
     }
 
+    @CommandA(label = "update", name = "Update", description = "Update your accounts rank", category = Category.GENERAL, usage = ".update")
+    public static void updateCommand(IMessage im){
+        String account = UserValue.LINKED_ACCOUNT.getFor(im.getAuthor()).asString();
+        if (account.equalsIgnoreCase("")) {
+            MessageUtils.sendChannelMessage("You must link an account using " + Main.PREFIX + "link before you can use this command!", im.getChannel());
+            return;
+        }
+        String system = UserValue.LINKED_PLATFORM.getFor(im.getAuthor()).asString();
+        system = formatSystem(system);
+        Rank cur = Rank.getRankFromString(UserValue.RANK.getFor(im.getAuthor()).asString());
+        Rank highestRank = Rank.UNRANKED;
+        HashMap<Playlist, Rank> ranks;
+        IMessage m = MessageUtils.sendChannelMessage("Loading...", im.getChannel());
+        ranks = getRanksFor(account, system);
+        if (ranks == null) {
+            MessageUtils.editMessage(im, "That user does not exist on that platform! Usernames are CaSe-SenSItiVe");
+            return;
+        }
+        for (Rank r : ranks.values()) {
+            if (r.val > highestRank.val)
+                highestRank = r;
+        }
+        if(cur.val == highestRank.val){
+            MessageUtils.editMessage(im, "Your rank is up to date");
+            return;
+        }
+
+        removeOldRole(im.getAuthor(), im.getGuild());
+        UserValue.RANK.setFor(im.getAuthor(), highestRank.name());
+        String role = highestRank.getStringBroad(); //Broad string matches the roles perfectly
+        try {
+            im.getAuthor().addRole(im.getGuild().getRolesByName(role).get(0));
+        } catch (MissingPermissionsException | RateLimitException | DiscordException e) {
+            MessageUtils.stackTrace(e);
+        }
+        MessageUtils.editMessage(im, "Your rank has been updated to **" + highestRank.getString() + "**");
+    }
     @CommandA(label = "unlink", name = "Unlink", description = "Unlink your account from your discord", category = Category.GENERAL, usage = ".link [System] [Username]")
     public static void unlinkCommand(IMessage im) {
+        if (UserValue.LINKED_ACCOUNT.getFor(im.getAuthor()).asString().equalsIgnoreCase("")) {
+            MessageUtils.sendChannelMessage("You have not yet linked your account! Type " + Main.PREFIX + "link" + " to link your account", im.getChannel());
+            return;
+        }
         try {
             removeOldRole(im.getAuthor(), im.getGuild());
             im.getAuthor().removeRole(im.getGuild().getRolesByName("PS4").get(0));
@@ -337,7 +375,7 @@ public class StatCommands {
             String link = "https://rocketleague.tracker.network/profile/" + system + "/" + user;
             Document doc = Jsoup.connect(link).get();
             Element season_table;
-            if (doc.getElementsByClass("season-table").size() < 1) { //Only existing users have a season-table
+            if (doc.getElementsByClass("season-table").size() == 0) { //Only existing users have a season-table
                 return null;
             }
             Element season4 = doc.getElementsByClass("card-table").get(0);
@@ -351,8 +389,10 @@ public class StatCommands {
                 Playlist list = Playlist.fromTrackerNetwork(play);
                 if (list == null)
                     continue;
-                if(cell.getElementsByTag("a").size() > 0) //Tracker Network likes to try to "estimate" your rank
+                if(cell.getElementsByClass("ion").size() > 0) { //Tracker Network likes to try to "estimate" your rank
                     ranks.put(list, Rank.UNRANKED);
+                    continue;
+                }
                 Element img = tr.getElementsByTag("img").get(0); //img
                 String html = img.outerHtml();
                 Pattern p = Pattern.compile("([0-9]+)\\.png");
@@ -372,6 +412,7 @@ public class StatCommands {
             }
         } catch (IOException ioe) {
             ioe.printStackTrace();
+            return null;
         }
         return ranks;
     }

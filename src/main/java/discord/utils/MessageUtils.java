@@ -5,7 +5,10 @@ import discord.modules.command.CommandA;
 import discord.modules.command.Commands;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import sx.blah.discord.handle.obj.*;
+import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MessageBuilder;
+import sx.blah.discord.util.MissingPermissionsException;
+import sx.blah.discord.util.RateLimitException;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -21,6 +24,13 @@ public class MessageUtils {
 			e.printStackTrace();
 		}
 		return im;
+	}
+	public static void editMessage(IMessage im, String content){
+		try{
+			im.edit(content);
+		} catch (MissingPermissionsException | RateLimitException | DiscordException e) {
+			MessageUtils.stackTrace(e);
+		}
 	}
 	public static void stackTrace(Exception e){
 		IGuild g = Main.INSTANCE.client.getGuildByID("107131596355698688");
