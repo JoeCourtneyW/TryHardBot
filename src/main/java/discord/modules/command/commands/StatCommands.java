@@ -54,6 +54,19 @@ public class StatCommands {
 		public String getDiv() {
 			return div;
 		}
+
+		public static Playlist fromTrackerNetwork(String tn){
+			if(tn.contains("Solo"))
+				return SOLO_STANDARD;
+			else if(tn.contains("Duel"))
+				return SOLO;
+			else if(tn.contains("Standard"))
+				return STANDARD;
+			else if(tn.contains("Doubles"))
+				return DOUBLES;
+			else
+				return null;
+		}
 	}
 
 	public enum Rank {
@@ -180,12 +193,15 @@ public class StatCommands {
 			Element season4 = doc.getElementsByClass("card-table").get(0);
 			season4.getElementsByTag("img").get(0);
 			StringBuilder sb = new StringBuilder();
-			Elements imgs = season4.getElementsByTag("img");
-			int start = imgs.size() > 4 ? 1 : 0; //There is sometimes an unranked row
-			for(int i = start; i < imgs.size(); i++){
-				sb.append(Playlist.values()[i-start].getDisplay()); //Only four recognized Playlist values
+			Elements trs = season4.getElementsByTag("tr");
+			for(Element tr : trs){
+				String play = trs.get(1).text();
+				Playlist list = Playlist.fromTrackerNetwork(play);
+				if(list == null)
+					continue;
+				sb.append(list.getDisplay()); //Only four recognized Playlist values
 				sb.append(": ");
-				Element img = imgs.get(i);
+				Element img = tr.getElementsByTag("img").get(0);
 				String html = img.outerHtml();
 				System.out.println(html);
 				Pattern p = Pattern.compile("([0-9]+)\\.png");
