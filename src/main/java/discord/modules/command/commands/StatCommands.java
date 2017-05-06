@@ -132,9 +132,9 @@ public class StatCommands {
             String name = name().split("_")[0];
             String num = name().split("_")[1];
             if (num.length() < 4)
-                return MessageUtils.initialCap(name);
+                return MessageUtils.initialCap(name).trim();
             else
-                return MessageUtils.initialCap(name) + " " + MessageUtils.initialCap(num); //Grand Champion
+                return MessageUtils.initialCap(name).trim() + " " + MessageUtils.initialCap(num).trim(); //Grand Champion
         }
         public String getEmoji() {
             return emojiID;
