@@ -183,7 +183,7 @@ public class StatCommands {
 			Elements imgs = season4.getElementsByTag("img");
 			int start = imgs.size() > 4 ? 1 : 0; //There is sometimes an unranked row
 			for(int i = start; i < imgs.size(); i++){
-				sb.append(Playlist.values()[i].getDisplay());
+				sb.append(Playlist.values()[i-start].getDisplay()); //Only four recognized Playlist values
 				sb.append(": ");
 				Element img = imgs.get(i);
 				String html = img.outerHtml();
