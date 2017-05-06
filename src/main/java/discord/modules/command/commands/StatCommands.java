@@ -275,7 +275,7 @@ public class StatCommands {
         IMessage m = MessageUtils.sendChannelMessage("Loading...", im.getChannel());
         ranks = getRanksFor(user, system);
         if (ranks == null) {
-            MessageUtils.editMessage(im, "That user does not exist on that platform! Usernames are CaSe-SenSItiVe");
+            MessageUtils.editMessage(m, "That user does not exist on that platform! Usernames are CaSe-SenSItiVe");
             return;
         }
         for (Rank r : ranks.values()) {
@@ -294,7 +294,7 @@ public class StatCommands {
         //if (highestRank.val > Rank.DIAMOND_III.val) {
         //TODO: notify online admins
         //}
-        MessageUtils.editMessage(m, im.getAuthor().mention() + "you have linked your discord account to " + user + " on " + system);
+        MessageUtils.editMessage(m, im.getAuthor().mention() + ", you have linked your discord account to " + user + " on " + system);
 
         UserValue.LINKED_ACCOUNT.setFor(im.getAuthor(), user);
         UserValue.LINKED_PLATFORM.setFor(im.getAuthor(), system);
@@ -316,7 +316,7 @@ public class StatCommands {
         IMessage m = MessageUtils.sendChannelMessage("Loading...", im.getChannel());
         ranks = getRanksFor(account, system);
         if (ranks == null) {
-            MessageUtils.editMessage(im, "That user does not exist on that platform! Usernames are CaSe-SenSItiVe");
+            MessageUtils.editMessage(m, "That user does not exist on that platform! Usernames are CaSe-SenSItiVe");
             return;
         }
         for (Rank r : ranks.values()) {
@@ -324,7 +324,7 @@ public class StatCommands {
                 highestRank = r;
         }
         if(cur.val == highestRank.val){
-            MessageUtils.editMessage(im, "Your rank is up to date");
+            MessageUtils.editMessage(m, "Your rank is up to date");
             return;
         }
 
@@ -336,7 +336,7 @@ public class StatCommands {
         } catch (MissingPermissionsException | RateLimitException | DiscordException e) {
             MessageUtils.stackTrace(e);
         }
-        MessageUtils.editMessage(im, "Your rank has been updated to **" + highestRank.getString() + "**");
+        MessageUtils.editMessage(m, "Your rank has been updated to **" + highestRank.getString() + "**");
     }
     @CommandA(label = "unlink", name = "Unlink", description = "Unlink your account from your discord", category = Category.GENERAL, usage = ".link [System] [Username]")
     public static void unlinkCommand(IMessage im) {
