@@ -391,7 +391,7 @@ public class StatCommands {
         if(system.equalsIgnoreCase("ps")){
             return "PS4";
         }else if(system.equalsIgnoreCase("steam")){
-            return "XBOX";
+            return "PC";
         }else{
             return system.toUpperCase();
         }
