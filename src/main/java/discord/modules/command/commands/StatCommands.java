@@ -285,6 +285,11 @@ public class StatCommands {
         removeOldRole(im.getAuthor(), im.getGuild());
         String role = highestRank.getStringBroad(); //Broad string matches the roles perfectly
         system = roleFromSystem(system);
+        if(system.equalsIgnoreCase("ps")){
+            system = "ps4";
+        }else if(system.equalsIgnoreCase("steam")){
+            system = "pc";
+        }
         try {
             im.getAuthor().addRole(im.getGuild().getRolesByName(role).get(0));
             im.getAuthor().addRole(im.getGuild().getRolesByName(system).get(0));
