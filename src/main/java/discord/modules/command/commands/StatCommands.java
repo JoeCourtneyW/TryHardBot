@@ -191,9 +191,10 @@ public class StatCommands {
 				return;
 			}
 			Element season4 = doc.getElementsByClass("card-table").get(0);
+			season_table = season4.getElementsByTag("tbody").get(0);
 			season4.getElementsByTag("img").get(0);
 			StringBuilder sb = new StringBuilder();
-			Elements trs = season4.getElementsByTag("tr");
+			Elements trs = season_table.getElementsByTag("tr");
 			for(Element tr : trs){
 				String play = trs.get(1).text();
 				Playlist list = Playlist.fromTrackerNetwork(play);
@@ -201,8 +202,7 @@ public class StatCommands {
 					continue;
 				sb.append(list.getDisplay()); //Only four recognized Playlist values
 				sb.append(": ");
-
-				Element img = tr.getElementsByAttributeValue("style", "width:30px;").get(0); //img
+				Element img = tr.getElementsByTag("img").get(0); //img
 				String html = img.outerHtml();
 				System.out.println(html);
 				Pattern p = Pattern.compile("([0-9]+)\\.png");
