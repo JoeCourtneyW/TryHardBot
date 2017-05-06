@@ -191,6 +191,7 @@ public class StatCommands {
         sb.append("**");
         sb.append(user);
         sb.append("'s** stats:");
+        sb.append("\n");
         for (Playlist list : ranks.keySet()) {
             sb.append("**");
             sb.append(list.getDisplay());
@@ -224,6 +225,7 @@ public class StatCommands {
         sb.append("**");
         sb.append(account);
         sb.append("'s** stats:");
+        sb.append("\n");
         for (Playlist list : ranks.keySet()) {
             sb.append("**");
             sb.append(list.getDisplay());
