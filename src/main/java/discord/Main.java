@@ -89,7 +89,7 @@ public class Main {
 			INSTANCE.client.changeAvatar(i);
 			
 			INSTANCE.client.changeUsername("Try Hard With Friends"); //If restarted too often, throws error
-			INSTANCE.client.changeStatus(Status.game("V1.0"));
+			INSTANCE.client.changeStatus(Status.game("V1.1"));
 
 		} catch (Exception e) {
 			//e.printStackTrace(); RateLimitError sometimes
