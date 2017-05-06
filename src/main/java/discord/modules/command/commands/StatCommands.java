@@ -284,6 +284,7 @@ public class StatCommands {
         }
         removeOldRole(im.getAuthor(), im.getGuild());
         String role = highestRank.getStringBroad(); //Broad string matches the roles perfectly
+        System.out.println(role);
         try {
             im.getAuthor().addRole(im.getGuild().getRolesByName(role).get(0));
             im.getAuthor().addRole(im.getGuild().getRolesByName(system).get(0));
