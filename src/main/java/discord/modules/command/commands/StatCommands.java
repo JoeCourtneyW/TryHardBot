@@ -201,7 +201,8 @@ public class StatCommands {
 					continue;
 				sb.append(list.getDisplay()); //Only four recognized Playlist values
 				sb.append(": ");
-				Element img = tr.getElementsByTag("img").get(0);
+
+				Element img = tr.getElementsByAttributeValue("style", "width:30px;").get(0); //img
 				String html = img.outerHtml();
 				System.out.println(html);
 				Pattern p = Pattern.compile("([0-9]+)\\.png");
