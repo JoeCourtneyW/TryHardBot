@@ -188,8 +188,13 @@ public class StatCommands {
             MessageUtils.sendChannelMessage("That user does not exist on that platform! Usernames are CaSe-SenSItiVe", im.getChannel());
             return;
         }
+        sb.append("**");
+        sb.append(user);
+        sb.append("'s** stats:");
         for (Playlist list : ranks.keySet()) {
+            sb.append("**");
             sb.append(list.getDisplay());
+            sb.append("**");
             sb.append(": ");
             sb.append(ranks.get(list).getStringNum());
             //sb.append(" "); extra space after stringnum already?
@@ -216,8 +221,13 @@ public class StatCommands {
             MessageUtils.sendChannelMessage("That user does not exist on that platform! Usernames are CaSe-SenSItiVe", im.getChannel());
             return;
         }
+        sb.append("**");
+        sb.append(account);
+        sb.append("'s** stats:");
         for (Playlist list : ranks.keySet()) {
+            sb.append("**");
             sb.append(list.getDisplay());
+            sb.append("**");
             sb.append(": ");
             sb.append(ranks.get(list).getStringNum());
             //sb.append(" "); extra space after stringnum already?
