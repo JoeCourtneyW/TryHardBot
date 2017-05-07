@@ -387,7 +387,7 @@ public class StatCommands {
         HashMap<Playlist, Rank> ranks = new HashMap<>(); //TODO: Sort this hashmap so that the output is always in the same order
         try {
             String link = "https://rocketleague.tracker.network/profile/" + system + "/" + user;
-            Document doc = Jsoup.connect(link).timeout(10000).get();
+            Document doc = Jsoup.connect(link).timeout(7500).get();
             Element season_table;
             if (doc.getElementsByClass("season-table").size() == 0) { //Only existing users have a season-table
                 return ranks;
