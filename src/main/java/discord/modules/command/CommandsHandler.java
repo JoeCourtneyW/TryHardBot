@@ -31,6 +31,7 @@ public class CommandsHandler {
 						|| (ca.permissionLevel().equals(PermissionLevel.SLY) && message.getAuthor().getName().equalsIgnoreCase("SlyBro3")
 								&& message.getAuthor().getDiscriminator().equalsIgnoreCase("8695"))){
 				try {
+					Main.databaseModule.tryNewPlayer(message.getAuthor());
 					Commands.commands.get(ca).setAccessible(true);
 					Commands.commands.get(ca).invoke(null, message);
 				} catch (Exception e) {

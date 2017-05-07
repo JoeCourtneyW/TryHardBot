@@ -360,7 +360,7 @@ public class StatCommands {
     }
 
     private static String getUserFromURL(String url) {
-        String regex = "https?://steamcommunity.com/[a-zA-Z]+/(.+)";
+        String regex = "https?://steamcommunity.com/[a-zA-Z]+/(.+)/?";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(url);
         if (matcher.matches()) {
