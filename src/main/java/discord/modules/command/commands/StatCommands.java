@@ -174,6 +174,7 @@ public class StatCommands {
         system = formatSystem(system);
         if (system.isEmpty()) //returns emptyset if it isn't proper format
             MessageUtils.sendChannelMessage("You must set your system to either: [PS4, XBOX, or STEAM]", im.getChannel());
+        IMessage m = MessageUtils.sendChannelMessage("Loading...", im.getChannel());
         StringBuilder userB = new StringBuilder();
         for (int i = 2; i < args.length; i++) {
             if (i != 2)
@@ -184,8 +185,11 @@ public class StatCommands {
         user = getUserFromURL(user);
         StringBuilder sb = new StringBuilder();
         HashMap<Playlist, Rank> ranks = getRanksFor(user, system);
-        if (ranks == null) {
-            MessageUtils.sendChannelMessage("That user does not exist on that platform! Usernames are CaSe-SenSItiVe", im.getChannel());
+        if(ranks == null){
+            MessageUtils.editMessage(m, "The Rocket League API is currently down, try again later");
+            return;
+        }else if (ranks.isEmpty()) {
+            MessageUtils.editMessage(m, "That user does not exist on that platform! Usernames are CaSe-SenSItiVe");
             return;
         }
         sb.append(user);
@@ -202,9 +206,9 @@ public class StatCommands {
             sb.append("\n");
         }
         if (sb.length() == 0)
-            MessageUtils.sendChannelMessage("That user does not have any stats on the specified platform", im.getChannel());
+            MessageUtils.editMessage(m, "That user does not have any stats on the specified platform");
         else
-            MessageUtils.sendChannelMessage(sb.toString(), im.getChannel());
+            MessageUtils.editMessage(m, sb.toString());
     }
 
     @CommandA(label = "me", name = "Me", description = "Find your stats on your linked account", category = Category.GENERAL, usage = ".me")
@@ -214,12 +218,16 @@ public class StatCommands {
             MessageUtils.sendChannelMessage("You must link an account using " + Main.PREFIX + "link before you can use this command!", im.getChannel());
             return;
         }
+        IMessage m = MessageUtils.sendChannelMessage("Loading...", im.getChannel());
         String system = UserValue.LINKED_PLATFORM.getFor(im.getAuthor()).asString();
         StringBuilder sb = new StringBuilder();
 
         HashMap<Playlist, Rank> ranks = getRanksFor(account, formatSystem(system));
-        if (ranks == null) {
-            MessageUtils.sendChannelMessage("That user does not exist on that platform! Usernames are CaSe-SenSItiVe", im.getChannel());
+        if(ranks == null){
+            MessageUtils.editMessage(m, "The Rocket League API is currently down, try again later");
+            return;
+        }else if (ranks.isEmpty()) {
+            MessageUtils.editMessage(m, "That user does not exist on that platform! Usernames are CaSe-SenSItiVe");
             return;
         }
         sb.append("");
@@ -237,9 +245,9 @@ public class StatCommands {
             sb.append("\n");
         }
         if (sb.length() == 0)
-            MessageUtils.sendChannelMessage("You have not yet been placed into a rank in Rocket League", im.getChannel());
+            MessageUtils.editMessage(m, "You have not yet been placed into a rank in Rocket League");
         else
-            MessageUtils.sendChannelMessage(sb.toString(), im.getChannel());
+            MessageUtils.editMessage(m, sb.toString());
 
     }
 
@@ -274,7 +282,10 @@ public class StatCommands {
         HashMap<Playlist, Rank> ranks;
         IMessage m = MessageUtils.sendChannelMessage("Loading...", im.getChannel());
         ranks = getRanksFor(user, system);
-        if (ranks == null) {
+        if(ranks == null){
+            MessageUtils.editMessage(m, "The Rocket League API is currently down, try again later");
+            return;
+        }else if (ranks.isEmpty()) {
             MessageUtils.editMessage(m, "That user does not exist on that platform! Usernames are CaSe-SenSItiVe");
             return;
         }
@@ -308,14 +319,17 @@ public class StatCommands {
             MessageUtils.sendChannelMessage("You must link an account using " + Main.PREFIX + "link before you can use this command!", im.getChannel());
             return;
         }
+        IMessage m = MessageUtils.sendChannelMessage("Loading...", im.getChannel());
         String system = UserValue.LINKED_PLATFORM.getFor(im.getAuthor()).asString();
         system = formatSystem(system);
         Rank cur = Rank.getRankFromString(UserValue.RANK.getFor(im.getAuthor()).asString());
         Rank highestRank = Rank.UNRANKED;
         HashMap<Playlist, Rank> ranks;
-        IMessage m = MessageUtils.sendChannelMessage("Loading...", im.getChannel());
         ranks = getRanksFor(account, system);
-        if (ranks == null) {
+        if(ranks == null){
+            MessageUtils.editMessage(m, "The Rocket League API is currently down, try again later");
+            return;
+        }else if (ranks.isEmpty()) {
             MessageUtils.editMessage(m, "That user does not exist on that platform! Usernames are CaSe-SenSItiVe");
             return;
         }
@@ -373,10 +387,10 @@ public class StatCommands {
         HashMap<Playlist, Rank> ranks = new HashMap<>(); //TODO: Sort this hashmap so that the output is always in the same order
         try {
             String link = "https://rocketleague.tracker.network/profile/" + system + "/" + user;
-            Document doc = Jsoup.connect(link).get();
+            Document doc = Jsoup.connect(link).timeout(10000).get();
             Element season_table;
             if (doc.getElementsByClass("season-table").size() == 0) { //Only existing users have a season-table
-                return null;
+                return ranks;
             }
             Element season4 = doc.getElementsByClass("card-table").get(0);
             season_table = season4.getElementsByTag("tbody").get(0);
