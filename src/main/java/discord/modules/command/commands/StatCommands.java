@@ -378,7 +378,10 @@ public class StatCommands {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(url);
         if (matcher.matches()) {
-            return matcher.group(1);
+            String id = matcher.group(1);
+            if(id.endsWith("/"))
+                id = id.substring(0, id.length()-1);
+            return id;
         }
         return url;
     }
