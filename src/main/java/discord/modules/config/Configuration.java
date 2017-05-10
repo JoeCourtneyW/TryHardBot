@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 
+import discord.Main;
 import org.apache.commons.lang3.StringUtils;
 
 import sx.blah.discord.api.IDiscordClient;
@@ -61,7 +62,7 @@ public class Configuration implements IModule {
 	public static IDiscordClient client;
 
 	public boolean enable(IDiscordClient dclient) {
-		f = new File("config.sly");
+		f = new File(Main.HOME_DIR + "config.sly");
 		client = dclient;
 		createConfigs();
 		readConfigs();
@@ -108,6 +109,7 @@ public class Configuration implements IModule {
 			}
 			in.close();
 		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -131,6 +133,7 @@ public class Configuration implements IModule {
 			pw.write(sb.toString());
 			pw.close();
 		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 

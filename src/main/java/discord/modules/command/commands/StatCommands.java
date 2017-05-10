@@ -12,6 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import discord.Main;
+import discord.modules.command.PermissionLevel;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -144,6 +145,7 @@ public class StatCommands {
             else
                 return MessageUtils.initialCap(name).trim() + " " + MessageUtils.initialCap(num).trim(); //Grand Champion
         }
+
         public String getEmoji() {
             return emojiID;
         }
@@ -193,10 +195,10 @@ public class StatCommands {
         user = getUserFromURL(user);
         StringBuilder sb = new StringBuilder();
         HashMap<Playlist, Rank> ranks = getRanksFor(user, system);
-        if(ranks == null){
+        if (ranks == null) {
             MessageUtils.editMessage(m, "The Rocket League API is currently down, try again later");
             return;
-        }else if (ranks.isEmpty()) {
+        } else if (ranks.isEmpty()) {
             MessageUtils.editMessage(m, "That user does not exist on that platform! Usernames are CaSe-SenSItiVe");
             return;
         }
@@ -231,10 +233,10 @@ public class StatCommands {
         StringBuilder sb = new StringBuilder();
 
         HashMap<Playlist, Rank> ranks = getRanksFor(account, formatSystem(system));
-        if(ranks == null){
+        if (ranks == null) {
             MessageUtils.editMessage(m, "The Rocket League API is currently down, try again later");
             return;
-        }else if (ranks.isEmpty()) {
+        } else if (ranks.isEmpty()) {
             MessageUtils.editMessage(m, "That user does not exist on that platform! Usernames are CaSe-SenSItiVe");
             return;
         }
@@ -290,10 +292,10 @@ public class StatCommands {
         HashMap<Playlist, Rank> ranks;
         IMessage m = MessageUtils.sendChannelMessage("Loading...", im.getChannel());
         ranks = getRanksFor(user, system);
-        if(ranks == null){
+        if (ranks == null) {
             MessageUtils.editMessage(m, "The Rocket League API is currently down, try again later");
             return;
-        }else if (ranks.isEmpty()) {
+        } else if (ranks.isEmpty()) {
             MessageUtils.editMessage(m, "That user does not exist on that platform! Usernames are CaSe-SenSItiVe");
             return;
         }
@@ -319,18 +321,41 @@ public class StatCommands {
         UserValue.LINKED_PLATFORM.setFor(im.getAuthor(), system);
         UserValue.RANK.setFor(im.getAuthor(), highestRank.toString());
     }
+
     @CommandA(label = "rankup", name = "Rankup", description = "Show detailed rank information", category = Category.GENERAL, usage = ".update")
     public static void rankupCommand(IMessage im) {
 
         BufferedImage bi = new BufferedImage(100, 100, ColorModel.TRANSLUCENT);
         Graphics2D g = bi.createGraphics();
         g.setColor(Color.BLUE);
-        g.drawRect(0, 0, 100, 100);
+        g.drawString("This is yeet", 40, 80);
         File img = createImageFile(bi);
         MessageUtils.sendFile(img, im.getChannel());
     }
+
+    @CommandA(label = "db", name = "Database", description = "Show info from user's database row", permissionLevel = PermissionLevel.SLY, category = Category.GENERAL, usage = ".db [User Mention]")
+    public static void dbCommand(IMessage im) {
+        List<IUser> us = im.getMentions();
+        if (us.size() != 1) {
+            MessageUtils.sendSyntax("Database", im.getChannel());
+            return;
+        }
+        IUser user = us.get(0);
+        StringBuilder msg = new StringBuilder("```");
+        msg.append(user.getName());
+        msg.append("'s info: \n");
+        for(UserValue uv : UserValue.values()){
+            msg.append(uv.name());
+            msg.append(": ");
+            msg.append(uv.getFor(user));
+            msg.append("\n");
+        }
+        msg.append("```");
+        MessageUtils.sendChannelMessage(msg.toString(), im.getChannel());
+    }
+
     @CommandA(label = "update", name = "Update", description = "Update your accounts rank", category = Category.GENERAL, usage = ".rankup [System] [Username]")
-    public static void updateCommand(IMessage im){
+    public static void updateCommand(IMessage im) {
         String account = UserValue.LINKED_ACCOUNT.getFor(im.getAuthor()).asString();
         if (account.equalsIgnoreCase("")) {
             MessageUtils.sendChannelMessage("You must link an account using " + Main.PREFIX + "link before you can use this command!", im.getChannel());
@@ -343,10 +368,10 @@ public class StatCommands {
         Rank highestRank = Rank.UNRANKED;
         HashMap<Playlist, Rank> ranks;
         ranks = getRanksFor(account, system);
-        if(ranks == null){
+        if (ranks == null) {
             MessageUtils.editMessage(m, "The Rocket League API is currently down, try again later");
             return;
-        }else if (ranks.isEmpty()) {
+        } else if (ranks.isEmpty()) {
             MessageUtils.editMessage(m, "That user does not exist on that platform! Usernames are CaSe-SenSItiVe");
             return;
         }
@@ -354,7 +379,7 @@ public class StatCommands {
             if (r.val > highestRank.val)
                 highestRank = r;
         }
-        if(cur.val == highestRank.val){
+        if (cur.val == highestRank.val) {
             MessageUtils.editMessage(m, "Your rank is up to date");
             return;
         }
@@ -369,6 +394,7 @@ public class StatCommands {
         }
         MessageUtils.editMessage(m, "Your rank has been updated to **" + highestRank.getString() + "**");
     }
+
     @CommandA(label = "unlink", name = "Unlink", description = "Unlink your account from your discord", category = Category.GENERAL, usage = ".link [System] [Username]")
     public static void unlinkCommand(IMessage im) {
         if (UserValue.LINKED_ACCOUNT.getFor(im.getAuthor()).asString().equalsIgnoreCase("")) {
@@ -396,12 +422,13 @@ public class StatCommands {
         Matcher matcher = pattern.matcher(url);
         if (matcher.matches()) {
             String id = matcher.group(1);
-            if(id.endsWith("/"))
-                id = id.substring(0, id.length()-1);
+            if (id.endsWith("/"))
+                id = id.substring(0, id.length() - 1);
             return id;
         }
         return url;
     }
+
     private static HashMap<Playlist, Rank> getRanksFor(String user, String system) {
         HashMap<Playlist, Rank> ranks = new HashMap<>(); //TODO: Sort this hashmap so that the output is always in the same order
         try {
@@ -422,7 +449,7 @@ public class StatCommands {
                 Playlist list = Playlist.fromTrackerNetwork(play);
                 if (list == null)
                     continue;
-                if(cell.getElementsByClass("ion").size() > 0) { //Tracker Network likes to try to "estimate" your rank
+                if (cell.getElementsByClass("ion").size() > 0) { //Tracker Network likes to try to "estimate" your rank
                     ranks.put(list, Rank.UNRANKED);
                     continue;
                 }
@@ -438,8 +465,8 @@ public class StatCommands {
                 Rank r = Rank.fromVal(rank);
                 ranks.put(list, r);
             }
-            for(Playlist p : Playlist.values()){
-                if(!ranks.containsKey(p)){
+            for (Playlist p : Playlist.values()) {
+                if (!ranks.containsKey(p)) {
                     ranks.put(p, Rank.UNRANKED); //There are no rows for playlists that the user hasn't played
                 }
             }
@@ -461,27 +488,30 @@ public class StatCommands {
         }
         return system;
     }
-    private static String roleFromSystem(String system){
-        if(system.equalsIgnoreCase("ps")){
+
+    private static String roleFromSystem(String system) {
+        if (system.equalsIgnoreCase("ps")) {
             return "PS4";
-        }else if(system.equalsIgnoreCase("steam")){
+        } else if (system.equalsIgnoreCase("steam")) {
             return "PC";
-        }else{
+        } else {
             return system.toUpperCase();
         }
     }
-    private static File createImageFile(BufferedImage bi){
-        File f = new File(UUID.randomUUID().toString() + ".png");
-        try{
-            if(!f.exists())
+
+    private static File createImageFile(BufferedImage bi) {
+        File f = new File(Main.HOME_DIR + "images/" + UUID.randomUUID().toString() + ".png");
+        try {
+            if (!f.exists())
                 f.createNewFile();
 
             ImageIO.write(bi, "png", f);
-        }catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return f;
     }
+
     private static void removeOldRole(IUser user, IGuild guild) {
         List<IRole> roles = user.getRolesForGuild(guild);
         try {
@@ -489,15 +519,15 @@ public class StatCommands {
             for (IRole r : roles) {
                 for (Rank rank : Rank.values()) {
                     String name = rank.getStringBroad();
-                        if (r.getName().equalsIgnoreCase(name)) {
-                            user.removeRole(r);
-                            break roleloop;
-                        }
+                    if (r.getName().equalsIgnoreCase(name)) {
+                        user.removeRole(r);
+                        break roleloop;
+                    }
                 }
             }
             if (guild.getRolesByName("New Member").size() > 0)
                 user.removeRole(guild.getRolesByName("New Member").get(0));
-        }catch(MissingPermissionsException | RateLimitException | DiscordException e){
+        } catch (MissingPermissionsException | RateLimitException | DiscordException e) {
             e.printStackTrace();
         }
     }

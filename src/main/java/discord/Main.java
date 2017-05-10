@@ -28,6 +28,7 @@ public class Main {
 
 	public static Main INSTANCE;
 	public static String PREFIX = "";
+	public static String HOME_DIR = "/root/tryhardbot/";
 	public IDiscordClient client;
 	public static Commands commandsModule;
 	public static Configuration configModule;
@@ -48,7 +49,7 @@ public class Main {
 	}
 
 	private static Main login() {
-		return new Main(createClient(PERSONAL_TOKEN, true));
+		return new Main(createClient(PERSONAL_TOKEN));
 	}
 
 	private static void activateModules() {
@@ -60,15 +61,11 @@ public class Main {
 		databaseModule.enable(INSTANCE.client);
 	}
 
-	public static IDiscordClient createClient(String token, boolean login) { // Returns a new instance of the Discord client
+	private static IDiscordClient createClient(String token) { // Returns a new instance of the Discord client
 		ClientBuilder clientBuilder = new ClientBuilder(); // Creates the ClientBuilder instance
 		clientBuilder.withToken(token); // Adds the login info to the builder
 		try {
-			if (login) {
-				return clientBuilder.login(); // Creates the client instance and logs the client in
-			} else {
-				return clientBuilder.build(); // Creates the client instance but it doesn't log the client in yet, you would have to call client.login() yourself
-			}
+			return clientBuilder.login(); // Creates the client instance and logs the client in
 		} catch (DiscordException e) { // This is thrown if there was a problem building the client
 			e.printStackTrace();
 			return null;
@@ -85,7 +82,7 @@ public class Main {
 		}
 		PREFIX = Configuration.ConfigValue.PREFIX.getValue(); //Just to make it more accessible
 		try {
-			Image i = Image.forFile(new File("tryhardfriends.png")); //TODO
+			Image i = Image.forFile(new File(HOME_DIR + "tryhardfriends.png")); //TODO
 			INSTANCE.client.changeAvatar(i);
 			
 			INSTANCE.client.changeUsername("Try Hard With Friends"); //If restarted too often, throws error
