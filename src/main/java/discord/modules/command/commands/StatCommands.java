@@ -325,10 +325,11 @@ public class StatCommands {
     @CommandA(label = "rankup", name = "Rankup", description = "Show detailed rank information", category = Category.GENERAL, usage = ".update")
     public static void rankupCommand(IMessage im) {
 
-        BufferedImage bi = new BufferedImage(100, 100, ColorModel.TRANSLUCENT);
+        BufferedImage bi = new BufferedImage(500, 500, ColorModel.TRANSLUCENT);
         Graphics2D g = bi.createGraphics();
         g.setColor(Color.BLUE);
         g.drawString("This is yeet", 40, 80);
+        g.drawRect(250, 250, 40, 50);
         File img = createImageFile(bi);
         MessageUtils.sendFile(img, im.getChannel());
     }
@@ -347,7 +348,7 @@ public class StatCommands {
         for(UserValue uv : UserValue.values()){
             msg.append(uv.name());
             msg.append(": ");
-            msg.append(uv.getFor(user));
+            msg.append(uv.getFor(user).asString());
             msg.append("\n");
         }
         msg.append("```");
