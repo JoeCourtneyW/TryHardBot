@@ -84,6 +84,6 @@ public enum Rank {
     }
 
     public String getImageURL(){
-        return "https://rocketleague.tracker.network/Images/RL/ranked/s4-" + val + ".png ";
+        return "http://rocketleague.tracker.network/Images/RL/ranked/s4-" + val + ".png";
     }
 }
