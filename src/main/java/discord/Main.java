@@ -25,10 +25,9 @@ public class Main {
 	private final static String CLIENT_ID = "273659666054119425";
 	private final static String SERVER_ADD_LINK = "https://discordapp.com/api/oauth2/authorize?client_id=" + CLIENT_ID
 			+ "&scope=bot";
-
+	public final static String HOME_DIR = "/root/tryhardbot/";
 	public static Main INSTANCE;
 	public static String PREFIX = "";
-	public static String HOME_DIR = "/root/tryhardbot/";
 	public IDiscordClient client;
 	public static Commands commandsModule;
 	public static Configuration configModule;
