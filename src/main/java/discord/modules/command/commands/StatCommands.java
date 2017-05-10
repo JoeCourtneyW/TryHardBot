@@ -8,6 +8,7 @@ import java.awt.image.ImageObserver;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -219,7 +220,10 @@ public class StatCommands {
         g.setColor(Color.BLUE);
         BufferedImage buf;
         try {
-            buf = ImageIO.read(new URL(Rank.CHAMPION_III.getImageURL()));
+            URL url = new URL(Rank.CHAMPION_III.getImageURL());
+            URLConnection c = url.openConnection();
+            c.addRequestProperty("User-Agent", "Mozilla/4.76");
+            buf = ImageIO.read(c.getInputStream());
         }catch(IOException e){
             e.printStackTrace();
             return;
