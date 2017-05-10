@@ -1,8 +1,13 @@
 package discord.modules.command.commands;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,8 +26,11 @@ import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IRole;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
+
+import javax.imageio.ImageIO;
 
 public class StatCommands {
 
@@ -311,8 +319,17 @@ public class StatCommands {
         UserValue.LINKED_PLATFORM.setFor(im.getAuthor(), system);
         UserValue.RANK.setFor(im.getAuthor(), highestRank.toString());
     }
+    @CommandA(label = "rankup", name = "Rankup", description = "Show detailed rank information", category = Category.GENERAL, usage = ".update")
+    public static void rankupCommand(IMessage im) {
 
-    @CommandA(label = "update", name = "Update", description = "Update your accounts rank", category = Category.GENERAL, usage = ".update")
+        BufferedImage bi = new BufferedImage(100, 100, ColorModel.TRANSLUCENT);
+        Graphics2D g = bi.createGraphics();
+        g.setColor(Color.BLUE);
+        g.drawRect(0, 0, 100, 100);
+        File img = createImageFile(bi);
+        MessageUtils.sendFile(img, im.getChannel());
+    }
+    @CommandA(label = "update", name = "Update", description = "Update your accounts rank", category = Category.GENERAL, usage = ".rankup [System] [Username]")
     public static void updateCommand(IMessage im){
         String account = UserValue.LINKED_ACCOUNT.getFor(im.getAuthor()).asString();
         if (account.equalsIgnoreCase("")) {
@@ -385,7 +402,6 @@ public class StatCommands {
         }
         return url;
     }
-
     private static HashMap<Playlist, Rank> getRanksFor(String user, String system) {
         HashMap<Playlist, Rank> ranks = new HashMap<>(); //TODO: Sort this hashmap so that the output is always in the same order
         try {
@@ -453,6 +469,18 @@ public class StatCommands {
         }else{
             return system.toUpperCase();
         }
+    }
+    private static File createImageFile(BufferedImage bi){
+        File f = new File(UUID.randomUUID().toString() + ".png");
+        try{
+            if(!f.exists())
+                f.createNewFile();
+
+            ImageIO.write(bi, "png", f);
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+        return f;
     }
     private static void removeOldRole(IUser user, IGuild guild) {
         List<IRole> roles = user.getRolesForGuild(guild);

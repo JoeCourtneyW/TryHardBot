@@ -10,6 +10,7 @@ import sx.blah.discord.util.MessageBuilder;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -20,6 +21,24 @@ public class MessageUtils {
 		try {
 			im = new MessageBuilder(Main.INSTANCE.client).appendContent(message)
 			.withChannel(channel).build();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return im;
+	}
+	public static IMessage sendFile(File f, IChannel channel){
+		IMessage im = Main.INSTANCE.client.getMessageByID("0");
+		try {
+			im = channel.sendFile(f);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return im;
+	}
+	public static IMessage sendFileWithMessage(File f, String content, IChannel channel){
+		IMessage im = Main.INSTANCE.client.getMessageByID("0");
+		try {
+			im = channel.sendFile(content, f);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
