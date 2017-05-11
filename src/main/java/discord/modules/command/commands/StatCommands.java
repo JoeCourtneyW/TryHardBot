@@ -7,6 +7,7 @@ import java.awt.image.ColorModel;
 import java.awt.image.ImageObserver;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
@@ -223,8 +224,8 @@ public class StatCommands {
             URL url = new URL("http://dbfhrael6egb5.cloudfront.net/wp-content/themes/qr/images/slideshows/solutions/static-04.png");
             URLConnection c = url.openConnection();
             c.addRequestProperty("User-Agent", "Mozilla/4.76");
-            buf = ImageIO.read(c.getInputStream());
-        }catch(IOException e){
+            buf = ImageIO.read((InputStream)c.getContent());
+        }catch(IOException | ClassCastException e){
             e.printStackTrace();
             return;
         }
