@@ -220,7 +220,7 @@ public class StatCommands {
         g.setColor(Color.BLUE);
         BufferedImage buf;
         try {
-            URL url = new URL(Rank.CHAMPION_III.getImageURL());
+            URL url = new URL("http://dbfhrael6egb5.cloudfront.net/wp-content/themes/qr/images/slideshows/solutions/static-04.png");
             URLConnection c = url.openConnection();
             c.addRequestProperty("User-Agent", "Mozilla/4.76");
             buf = ImageIO.read(c.getInputStream());
