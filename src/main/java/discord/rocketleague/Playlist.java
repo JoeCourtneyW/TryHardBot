@@ -1,25 +1,25 @@
 package discord.rocketleague;
 
 public enum Playlist {
-    SOLO("Solo Duel", "playlist_10"),
-    DOUBLES("Doubles", "playlist_11"),
-    SOLO_STANDARD("Solo Standard", "playlist_12"),
-    STANDARD("Standard", "playlist_13");
+    SOLO("Solo Duel", 10),
+    DOUBLES("Doubles", 11),
+    SOLO_STANDARD("Solo Standard", 13),
+    STANDARD("Standard", 0);
 
     private String display;
-    private String div;
+    private int rtn_id;
 
-    Playlist(String display, String div) {
+    Playlist(String display, int rtn_id) {
         this.display = display;
-        this.div = div;
+        this.rtn_id = rtn_id;
     }
 
     public String getDisplay() {
         return display;
     }
 
-    public String getDiv() {
-        return div;
+    public int getRtn_id() {
+        return rtn_id;
     }
 
     public static Playlist fromTrackerNetwork(String tn) {
@@ -33,5 +33,17 @@ public enum Playlist {
             return DOUBLES;
         else
             return null;
+    }
+    public static Playlist fromUser(String user_input){
+        String i = user_input.toLowerCase();
+        if(i.equalsIgnoreCase("1v1") || i.equalsIgnoreCase("solo") || i.contains("duel") || i.contains("1"))
+            return Playlist.SOLO;
+        else if(i.equalsIgnoreCase("2v2") || i.equalsIgnoreCase("doubles") || i.equalsIgnoreCase("double") || i.contains("2"))
+            return Playlist.DOUBLES;
+        else if(i.equalsIgnoreCase("3v3") || i.equalsIgnoreCase("standard") || i.equalsIgnoreCase("standards") || i.contains("3"))
+            return Playlist.STANDARD;
+        else if(i.equalsIgnoreCase("solostandard") || i.contains("solo3"))
+            return Playlist.SOLO_STANDARD;
+        return null;
     }
 }

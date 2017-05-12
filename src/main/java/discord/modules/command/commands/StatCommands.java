@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -20,6 +21,7 @@ import discord.Main;
 import discord.modules.command.PermissionLevel;
 import discord.rocketleague.Playlist;
 import discord.rocketleague.Rank;
+import javafx.beans.binding.IntegerBinding;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -213,26 +215,92 @@ public class StatCommands {
         UserValue.RANK.setFor(im.getAuthor(), highestRank.toString());
     }
 
-    @CommandA(label = "rankup", name = "Rankup", description = "Show detailed rank information", category = Category.GENERAL, usage = ".update")
+    @CommandA(label = "rankup", name = "Rankup", description = "Show detailed rank information", category = Category.GENERAL, usage = ".rankup <System> <Username> [Playlist]")
     public static void rankupCommand(IMessage im) {
 
-        BufferedImage bi = new BufferedImage(500, 500, ColorModel.TRANSLUCENT);
-        Graphics2D g = bi.createGraphics();
-        g.setColor(Color.BLUE);
-        BufferedImage buf;
+        String[] args = im.getContent().split(" ");
+        String system = "";
+        String user = "";
+        Playlist playlist = null;
+        if (args.length < 4) {
+            if ((UserValue.LINKED_ACCOUNT.getFor(im.getAuthor()).asString().equalsIgnoreCase("") && args.length == 2)){
+                system = UserValue.LINKED_PLATFORM.getFor(im.getAuthor()).asString();
+                user = UserValue.LINKED_ACCOUNT.getFor(im.getAuthor()).asString();
+                playlist = Playlist.fromUser(args[1]);
+                if(playlist == null){
+                    MessageUtils.sendChannelMessage("You must enter a valid playlist Ex. 1v1, 2v2, 3v3, solo3",
+                            im.getChannel());
+                    return;
+                }
+            }else{
+                MessageUtils.sendSyntax("Rankup", im.getChannel());
+                return;
+            }
+        }
+        if(system.equalsIgnoreCase("")) {
+            system = args[1].toLowerCase();
+            system = formatSystem(system);
+            if (system.isEmpty()) {
+                MessageUtils.sendChannelMessage("You must set your system to either: [PS4, XBOX, or STEAM]",
+                        im.getChannel());
+                return;
+            }
+            system = system.toUpperCase();
+        }
+        if(user.equalsIgnoreCase("")) {
+            StringBuilder userB = new StringBuilder();
+            for (int i = 2; i < args.length; i++) {
+                if (i != 2)
+                    userB.append(" ");
+                userB.append(args[i]);
+            }
+            user = userB.toString().trim();
+            user = getUserFromURL(user);
+        }
+
+        if(playlist == null){
+            playlist = Playlist.fromUser(args[3]);
+            if(playlist == null) {
+                MessageUtils.sendChannelMessage("You must enter a valid playlist Ex. 1v1, 2v2, 3v3, solo3",
+                        im.getChannel());
+                return;
+            }
+        }
+        HashMap<String, String> data;
+        IMessage m = MessageUtils.sendChannelMessage("Loading...", im.getChannel());
+        data = getRankUpFor(user, system, playlist);
+        if (data == null) {
+            MessageUtils.editMessage(m, "The Rocket League API is currently down, try again later");
+            return;
+        } else if (data.isEmpty()) {
+            MessageUtils.editMessage(m, "That user does not exist on that platform! Usernames are CaSe-SenSItiVe");
+            return;
+        }
+        int div_down = Integer.parseInt(data.get("div_up_down").split("|")[0]);
+        int div_up = Integer.parseInt(data.get("div_up_down").split("|")[1]);
+        int tier_up = Integer.parseInt(data.get("tier_up_down").split("|")[0]);
+        int tier_down = Integer.parseInt(data.get("tier_up_down").split("|")[1]);
+        int division = Integer.parseInt(data.get("division"));
+        Rank rank = Rank.getRankFromString(data.get("rank"));
+        BufferedImage img = new BufferedImage(800, 500, ColorModel.TRANSLUCENT);
+        BufferedImage rankImg;
         try {
-            Image i;
-            URL url = new URL("http://dbfhrael6egb5.cloudfront.net/wp-content/themes/qr/images/slideshows/solutions/static-04.png");
-            URLConnection c = url.openConnection();
-            c.addRequestProperty("User-Agent", "Mozilla/4.76");
-            buf = ImageIO.read(url);
-        }catch(IOException | ClassCastException e){
+            URL url = new URL(rank.getImageURL());
+            url.openConnection().addRequestProperty("User-Agent", "Mozilla/4.76");
+            rankImg = ImageIO.read(url);
+        }catch(IOException e) {
             e.printStackTrace();
             return;
         }
-        g.drawImage(buf, 50, 50, 200, 200, null);
-        File img = createImageFile(bi);
-        MessageUtils.sendFile(img, im.getChannel());
+
+        Graphics2D g = img.createGraphics();
+        g.drawRect(0, 0, img.getWidth() - 1, img.getHeight() - 1);
+        g.drawImage(rankImg, img.getWidth()/2-100, img.getHeight()/2-100, 200, 200, null);
+        g.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+        FontMetrics fm = g.getFontMetrics();
+        String a = " ";
+        g.drawString(rank.getStringNum(), (img.getWidth()/2) - (fm.stringWidth(rank.getStringNum()) / 2), (img.getHeight()/2) - (fm.getHeight() / 2)+200);
+        MessageUtils.sendFile(createImageFile(img), im.getChannel());
     }
 
     @CommandA(label = "db", name = "Database", description = "Show info from user's database row", permissionLevel = PermissionLevel.SLY, category = Category.GENERAL, usage = ".db [User Mention]")
@@ -330,7 +398,37 @@ public class StatCommands {
         }
         return url;
     }
+    private static HashMap<String, String> getRankUpFor(String user, String system, Playlist playlist) {
+        HashMap<String, String> data = new HashMap<>(); //TODO: Sort this hashmap so that the output is always in the same order
+        try {
+            String link = "https://rocketleague.tracker.network/profile/mmr/" + system + "/" + user;
+            Document doc = Jsoup.connect(link).timeout(7500).get();
+            if (doc.getElementsByClass("card-list-item").size() == 0) { //Only existing users have a season-table
+                return data;
+            }
+            Element table = doc.getElementsByClass("col-md-9").get(0).getElementsByClass("card").get(0);
+            Element playlist_div = table.getElementsByAttributeValue("data-id", playlist.getRtn_id() + "").get(0);
+            Element tier_div = playlist_div.getElementsByClass("col-md-3").get(4);
+            Element division_div = playlist_div.getElementsByClass("col-md-3").get(3);
+            Element rank_div = playlist_div.getElementsByClass("col-md-3").get(2);
+            String tier_up_down = tier_div.getElementsByTag("span").get(0).text().substring(2); //" ~2" -> "2"
+            tier_up_down += "|" + tier_div.getElementsByTag("span").get(1).text().substring(2);
+            String div_up_down = division_div.getElementsByTag("span").get(0).text().substring(2); //" ~2" -> "2"
+            div_up_down += "|" + division_div.getElementsByTag("span").get(1).text().substring(2); //"23|2"
+            String division = rank_div.getElementsByTag("h4").get(0).text().split(" ")[1].length() + "";
+            String rank = rank_div.getElementsByTag("span").get(0).text().toUpperCase().replaceAll(" ", "_");//Convert string to readable form
 
+            data.put("tier_up_down", tier_up_down);
+            data.put("div_up_down", div_up_down);
+            data.put("division", division);
+            data.put("rank", rank);
+
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+            return null;
+        }
+        return data;
+    }
     private static HashMap<Playlist, Rank> getRanksFor(String user, String system) {
         HashMap<Playlist, Rank> ranks = new HashMap<>(); //TODO: Sort this hashmap so that the output is always in the same order
         try {
