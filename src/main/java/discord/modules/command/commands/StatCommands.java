@@ -193,7 +193,7 @@ public class StatCommands {
         String role = highestRank.getStringBroad(); //Broad string matches the roles perfectly
         system = roleFromSystem(system);
         try {
-            im.getAuthor().addRole(im.getGuild().getRolesByName(role).get(0));
+            im.getAuthor().addRole(im.getGuild().getRolesByName("S4 " + role).get(0));
             im.getAuthor().addRole(im.getGuild().getRolesByName(system).get(0));
         } catch (MissingPermissionsException | RateLimitException | DiscordException e) {
             MessageUtils.stackTrace(e);
@@ -351,7 +351,7 @@ public class StatCommands {
         UserValue.RANK.setFor(im.getAuthor(), highestRank.name());
         String role = highestRank.getStringBroad(); //Broad string matches the roles perfectly
         try {
-            im.getAuthor().addRole(im.getGuild().getRolesByName(role).get(0));
+            im.getAuthor().addRole(im.getGuild().getRolesByName("S4 " + role).get(0));
         } catch (MissingPermissionsException | RateLimitException | DiscordException e) {
             MessageUtils.stackTrace(e);
         }
