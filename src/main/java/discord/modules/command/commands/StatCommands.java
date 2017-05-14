@@ -130,7 +130,7 @@ public class StatCommands {
         sb.append(account);
         sb.append("'s stats:");
         sb.append("\n");
-        for (Playlist list : ranks.keySet()) {
+        for (Playlist list : Playlist.values()) {
             sb.append("**");
             sb.append(list.getDisplay());
             sb.append("**");
@@ -216,7 +216,7 @@ public class StatCommands {
         String user = "";
         Playlist playlist = null;
         if (args.length < 4) {
-            if ((UserValue.LINKED_ACCOUNT.getFor(im.getAuthor()).asString().equalsIgnoreCase("") && args.length == 2)){
+            if ((!UserValue.LINKED_ACCOUNT.getFor(im.getAuthor()).asString().equalsIgnoreCase("") && args.length == 2)){
                 system = UserValue.LINKED_PLATFORM.getFor(im.getAuthor()).asString();
                 user = UserValue.LINKED_ACCOUNT.getFor(im.getAuthor()).asString();
                 playlist = Playlist.fromUser(args[1]);
@@ -242,7 +242,7 @@ public class StatCommands {
         }
         if(user.equalsIgnoreCase("")) {
             StringBuilder userB = new StringBuilder();
-            for (int i = 2; i < args.length; i++) {
+            for (int i = 2; i < args.length-1; i++) {
                 if (i != 2)
                     userB.append(" ");
                 userB.append(args[i]);
