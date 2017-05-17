@@ -15,6 +15,7 @@ import sx.blah.discord.api.events.EventDispatcher;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Status;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.Image;
@@ -81,7 +82,7 @@ public class Main {
 		}
 		PREFIX = Configuration.ConfigValue.PREFIX.getValue(); //Just to make it more accessible
 		try {
-			Image i = Image.forFile(new File(HOME_DIR + "tryhardfriends.png")); //TODO
+			Image i = Image.forFile(new File(HOME_DIR + "tryhardfriends.png"));
 			INSTANCE.client.changeAvatar(i);
 			
 			INSTANCE.client.changeUsername("Try Hard With Friends"); //If restarted too often, throws error
@@ -91,5 +92,12 @@ public class Main {
 			//e.printStackTrace(); RateLimitError sometimes
 		}
 		databaseModule.load();
+		for(IUser u : client.getGuildByID("295679840659439638").getUsers()){
+			try {
+				u.addRole(client.getGuildByID("295679840659439638").getRolesByName("Rocket League").get(0));
+			}catch(Exception e ){
+				e.printStackTrace();
+				}
+		}
 	}
 }

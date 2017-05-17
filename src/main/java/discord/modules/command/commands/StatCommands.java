@@ -563,7 +563,7 @@ public class StatCommands {
             for (IRole r : roles) {
                 for (Rank rank : Rank.values()) {
                     String name = rank.getStringBroad();
-                    if (r.getName().equalsIgnoreCase(name)) {
+                    if (r.getName().equalsIgnoreCase("S4 " + name)) {
                         user.removeRole(r);
                         break roleloop;
                     }
