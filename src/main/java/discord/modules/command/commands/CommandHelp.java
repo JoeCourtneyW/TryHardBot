@@ -9,7 +9,7 @@ import sx.blah.discord.handle.obj.IMessage;
 public class CommandHelp{
 
 	@CommandA(label = "help", name = "Help", description="List all commands on the server")
-	public static void helpCommand(IMessage im) {
+	public static void helpCommand(IMessage im, boolean na) {
 		String message = "```";
 		for (Category cat : Category.values()) {
 			if(cat == Category.NONE || cat ==Category.MUSIC || cat == Category.MODERATION || cat == Category.ADMINISTRATION)
@@ -25,7 +25,6 @@ public class CommandHelp{
 			}
 		}
 		MessageUtils.sendPrivateMessage(message + "```", im.getAuthor());
-		return;
 	}
 
 }

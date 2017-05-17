@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 
 import discord.Main;
 import discord.modules.command.PermissionLevel;
+import discord.modules.database.DatabaseObject;
 import discord.rocketleague.Playlist;
 import discord.rocketleague.Rank;
 import org.jsoup.Jsoup;
@@ -25,10 +26,7 @@ import discord.modules.command.CommandA;
 import discord.modules.database.UserValue;
 import discord.utils.MessageUtils;
 import org.jsoup.select.Elements;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IRole;
-import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.handle.obj.*;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
@@ -60,17 +58,25 @@ public class StatCommands {
     }
 
     @CommandA(label = "stat", name = "Stat", description = "Find your Rocket League stats", category = Category.GENERAL, usage = ".stat [System] [Username]", alias = "stats")
-    public static void statCommand(IMessage im) {
+    public static void statCommand(IMessage im, boolean privateMessage) {
+        IChannel channel = im.getChannel();
+        if(privateMessage){
+            try {
+                channel = Main.INSTANCE.client.getOrCreatePMChannel(im.getAuthor());
+            }catch(RateLimitException | DiscordException e){
+                e.printStackTrace();
+            }
+        }
         String[] args = im.getContent().split(" ");
         if (args.length < 3) {
-            MessageUtils.sendSyntax("Stat", im.getChannel());
+            MessageUtils.sendSyntax("Stat", channel);
             return;
         }
         String system = args[1].toLowerCase();
         system = formatSystem(system);
         if (system.isEmpty()) //returns emptyset if it isn't proper format
-            MessageUtils.sendChannelMessage("You must set your system to either: [PS4, XBOX, or STEAM]", im.getChannel());
-        IMessage m = MessageUtils.sendChannelMessage("Loading...", im.getChannel());
+            MessageUtils.sendChannelMessage("You must set your system to either: [PS4, XBOX, or STEAM]", channel);
+        IMessage m = MessageUtils.sendChannelMessage("Loading...", channel);
         StringBuilder userB = new StringBuilder();
         for (int i = 2; i < args.length; i++) {
             if (i != 2)
@@ -108,13 +114,21 @@ public class StatCommands {
     }
 
     @CommandA(label = "me", name = "Me", description = "Find your stats on your linked account", category = Category.GENERAL, usage = ".me")
-    public static void meCommand(IMessage im) {
+    public static void meCommand(IMessage im, boolean privateMessage) {
+        IChannel channel = im.getChannel();
+        if(privateMessage){
+            try {
+                channel = Main.INSTANCE.client.getOrCreatePMChannel(im.getAuthor());
+            }catch(RateLimitException | DiscordException e){
+                e.printStackTrace();
+            }
+        }
         String account = UserValue.LINKED_ACCOUNT.getFor(im.getAuthor()).asString();
         if (account.equalsIgnoreCase("")) {
-            MessageUtils.sendChannelMessage("You must link an account using " + Main.PREFIX + "link before you can use this command!", im.getChannel());
+            MessageUtils.sendChannelMessage("You must link an account using " + Main.PREFIX + "link before you can use this command!", channel);
             return;
         }
-        IMessage m = MessageUtils.sendChannelMessage("Loading...", im.getChannel());
+        IMessage m = MessageUtils.sendChannelMessage("Loading...", channel);
         String system = UserValue.LINKED_PLATFORM.getFor(im.getAuthor()).asString();
         StringBuilder sb = new StringBuilder();
 
@@ -148,21 +162,29 @@ public class StatCommands {
     }
 
     @CommandA(label = "link", name = "Link", description = "Link your account to your discord", category = Category.GENERAL, usage = ".link [System] [Username]")
-    public static void linkCommand(IMessage im) {
+    public static void linkCommand(IMessage im, boolean privateMessage) {
+        IChannel channel = im.getChannel();
+        if(privateMessage){
+            try {
+                channel = Main.INSTANCE.client.getOrCreatePMChannel(im.getAuthor());
+            }catch(RateLimitException | DiscordException e){
+                e.printStackTrace();
+            }
+        }
         if (!UserValue.LINKED_ACCOUNT.getFor(im.getAuthor()).asString().equalsIgnoreCase("")) {
-            MessageUtils.sendChannelMessage("You have already linked your account! Type " + Main.PREFIX + "unlink" + " to unlink your current account", im.getChannel());
+            MessageUtils.sendChannelMessage("You have already linked your account! Type " + Main.PREFIX + "unlink" + " to unlink your current account", channel);
             return;
         }
         String[] args = im.getContent().split(" ");
         if (args.length < 3) {
-            MessageUtils.sendSyntax("Link", im.getChannel());
+            MessageUtils.sendSyntax("Link", channel);
             return;
         }
         String system = args[1].toLowerCase();
         system = formatSystem(system);
         if (system.isEmpty()) {
             MessageUtils.sendChannelMessage("You must set your system to either: [PS4, XBOX, or STEAM]",
-                    im.getChannel());
+                    channel);
             return;
         }
         system = system.toUpperCase();
@@ -172,11 +194,17 @@ public class StatCommands {
                 userB.append(" ");
             userB.append(args[i]);
         }
+
         String user = userB.toString().trim();
         user = getUserFromURL(user);
+        if(UserValue.LINKED_ACCOUNT.getAll().contains(new DatabaseObject(user))){
+            MessageUtils.sendChannelMessage("That account has already been linked to a discord account.",
+                    channel);
+            return;
+        }
         Rank highestRank = Rank.UNRANKED;
         HashMap<Playlist, Rank> ranks;
-        IMessage m = MessageUtils.sendChannelMessage("Loading...", im.getChannel());
+        IMessage m = MessageUtils.sendChannelMessage("Loading...", channel);
         ranks = getRanksFor(user, system);
         if (ranks == null) {
             MessageUtils.editMessage(m, "The Rocket League API is currently down, try again later");
@@ -209,8 +237,15 @@ public class StatCommands {
     }
 
     @CommandA(label = "rankup", name = "Rankup", description = "Show detailed rank information", category = Category.GENERAL, usage = ".rankup <System> <Username> [Playlist]")
-    public static void rankupCommand(IMessage im) {
-
+    public static void rankupCommand(IMessage im, boolean privateMessage) {
+        IChannel channel = im.getChannel();
+        if(privateMessage){
+            try {
+                channel = Main.INSTANCE.client.getOrCreatePMChannel(im.getAuthor());
+            }catch(RateLimitException | DiscordException e){
+                e.printStackTrace();
+            }
+        }
         String[] args = im.getContent().split(" ");
         String system = "";
         String user = "";
@@ -222,11 +257,11 @@ public class StatCommands {
                 playlist = Playlist.fromUser(args[1]);
                 if(playlist == null){
                     MessageUtils.sendChannelMessage("You must enter a valid playlist Ex. 1v1, 2v2, 3v3, solo3",
-                            im.getChannel());
+                            channel);
                     return;
                 }
             }else{
-                MessageUtils.sendSyntax("Rankup", im.getChannel());
+                MessageUtils.sendSyntax("Rankup", channel);
                 return;
             }
         }
@@ -235,7 +270,7 @@ public class StatCommands {
             system = formatSystem(system);
             if (system.isEmpty()) {
                 MessageUtils.sendChannelMessage("You must set your system to either: [PS4, XBOX, or STEAM]",
-                        im.getChannel());
+                        channel);
                 return;
             }
             system = system.toUpperCase();
@@ -255,12 +290,12 @@ public class StatCommands {
             playlist = Playlist.fromUser(args[3]);
             if(playlist == null) {
                 MessageUtils.sendChannelMessage("You must enter a valid playlist Ex. 1v1, 2v2, 3v3, solo3",
-                        im.getChannel());
+                        channel);
                 return;
             }
         }
         HashMap<String, String> data;
-        IMessage m = MessageUtils.sendChannelMessage("Loading...", im.getChannel());
+        IMessage m = MessageUtils.sendChannelMessage("Loading...", channel);
         data = getRankUpFor(user, system, playlist);
         if (data == null) {
             MessageUtils.editMessage(m, "The Rocket League API is currently down, try again later");
@@ -293,11 +328,11 @@ public class StatCommands {
         FontMetrics fm = g.getFontMetrics();
         String a = " ";
         g.drawString(rank.getStringNum(), (img.getWidth()/2) - (fm.stringWidth(rank.getStringNum()) / 2), (img.getHeight()/2) - (fm.getHeight() / 2)+200);
-        MessageUtils.sendFile(createImageFile(img), im.getChannel());
+        MessageUtils.sendFile(createImageFile(img), channel);
     }
 
     @CommandA(label = "db", name = "Database", description = "Show info from user's database row", permissionLevel = PermissionLevel.SLY, category = Category.GENERAL, usage = ".db [User Mention]")
-    public static void dbCommand(IMessage im) {
+    public static void dbCommand(IMessage im, boolean privateMessage) {
         List<IUser> us = im.getMentions();
         if (us.size() != 1) {
             MessageUtils.sendSyntax("Database", im.getChannel());
@@ -318,13 +353,21 @@ public class StatCommands {
     }
 
     @CommandA(label = "update", name = "Update", description = "Update your accounts rank", category = Category.GENERAL, usage = ".rankup [System] [Username]")
-    public static void updateCommand(IMessage im) {
+    public static void updateCommand(IMessage im, boolean privateMessage) {
+        IChannel channel = im.getChannel();
+        if(privateMessage){
+            try {
+                channel = Main.INSTANCE.client.getOrCreatePMChannel(im.getAuthor());
+            }catch(RateLimitException | DiscordException e){
+                e.printStackTrace();
+            }
+        }
         String account = UserValue.LINKED_ACCOUNT.getFor(im.getAuthor()).asString();
         if (account.equalsIgnoreCase("")) {
-            MessageUtils.sendChannelMessage("You must link an account using " + Main.PREFIX + "link before you can use this command!", im.getChannel());
+            MessageUtils.sendChannelMessage("You must link an account using " + Main.PREFIX + "link before you can use this command!", channel);
             return;
         }
-        IMessage m = MessageUtils.sendChannelMessage("Loading...", im.getChannel());
+        IMessage m = MessageUtils.sendChannelMessage("Loading...", channel);
         String system = UserValue.LINKED_PLATFORM.getFor(im.getAuthor()).asString();
         system = formatSystem(system);
         Rank cur = Rank.getRankFromString(UserValue.RANK.getFor(im.getAuthor()).asString());
@@ -359,9 +402,17 @@ public class StatCommands {
     }
 
     @CommandA(label = "unlink", name = "Unlink", description = "Unlink your account from your discord", category = Category.GENERAL, usage = ".link [System] [Username]")
-    public static void unlinkCommand(IMessage im) {
+    public static void unlinkCommand(IMessage im, boolean privateMessage) {
+        IChannel channel = im.getChannel();
+        if(privateMessage){
+            try {
+                channel = Main.INSTANCE.client.getOrCreatePMChannel(im.getAuthor());
+            }catch(RateLimitException | DiscordException e){
+                e.printStackTrace();
+            }
+        }
         if (UserValue.LINKED_ACCOUNT.getFor(im.getAuthor()).asString().equalsIgnoreCase("")) {
-            MessageUtils.sendChannelMessage("You have not yet linked your account! Type " + Main.PREFIX + "link" + " to link your account", im.getChannel());
+            MessageUtils.sendChannelMessage("You have not yet linked your account! Type " + Main.PREFIX + "link" + " to link your account", channel);
             return;
         }
         try {
@@ -373,7 +424,7 @@ public class StatCommands {
             MessageUtils.stackTrace(e);
         }
         MessageUtils.sendChannelMessage("You have unlinked your Rocket League account from your discord",
-                im.getChannel());
+                channel);
         UserValue.LINKED_ACCOUNT.setFor(im.getAuthor(), "");
         UserValue.LINKED_PLATFORM.setFor(im.getAuthor(), "");
         UserValue.RANK.setFor(im.getAuthor(), "");

@@ -1,6 +1,8 @@
 package discord.modules.database;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import discord.Main;
 import sx.blah.discord.handle.obj.IUser;
@@ -32,6 +34,13 @@ public enum UserValue {
 		Main.databaseModule.syncDatabase(u);
 	}
 
+	public List<DatabaseObject> getAll(){
+		List<DatabaseObject> list = new ArrayList<>();
+		for(String flake : Database.getDatabaseCache().keySet()){
+			list.add(new DatabaseObject(Database.getCacheFor(flake).get(name())));
+		}
+		return list;
+	}
 	public DatabaseObject getFor(String snowflake) {
 		HashMap<String, Object> player_file = new HashMap<String, Object>();
 		for (HashMap<String, Object> pfile : Database.getDatabaseCache().values()) {

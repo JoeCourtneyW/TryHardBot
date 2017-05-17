@@ -15,23 +15,23 @@ public class AdminCommands {
 
 	@CommandA(label = "shutdown", name = "Shutdown", permissionLevel=PermissionLevel.SLY,
 			category=Category.ADMINISTRATION, description="Shutdown the bot client")
-	public static void shutdownCommand(IMessage im) {
+	public static void shutdownCommand(IMessage im, boolean na) {
 		MessageUtils.sendChannelMessage("Shutting down!", im.getChannel());
 		try {
 			Runtime.getRuntime().exec("sudo pkill java");
 		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		return;
 	}
 	@CommandA(label = "reboot", name = "Reboot", permissionLevel=PermissionLevel.SLY,
 			category=Category.ADMINISTRATION, description="Reboot the bot client")
-	public static void rebootCommand(IMessage im) {
+	public static void rebootCommand(IMessage im, boolean na) {
 		MessageUtils.sendChannelMessage("Rebooting!", im.getChannel());
 		try {
 			Runtime.getRuntime().exec("sudo reboot");
 		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		return;
 	}
 	/*@CommandA(label = "update", name = "Update", permissionLevel=PermissionLevel.SLY,
 			category=Category.ADMINISTRATION, description="Update and reboot the bot client")
@@ -73,6 +73,5 @@ public class AdminCommands {
 			} catch (MissingPermissionsException e) {
 				MessageUtils.sendChannelMessage("An internal error occured (MPE)", im.getChannel());
 			}
-		return;
 	}
 }
