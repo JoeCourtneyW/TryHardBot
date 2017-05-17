@@ -26,7 +26,8 @@ public class CommandsHandler {
 
         boolean privateMessage = false;
         for (String channels : AutoDelete.CHANNELS) {
-            privateMessage = channels.equalsIgnoreCase(channel.getID());
+            if((privateMessage = channels.equalsIgnoreCase(channel.getID())))
+                break;
         }
         if (privateMessage) {
             channel = Main.INSTANCE.client.getOrCreatePMChannel(message.getAuthor());
