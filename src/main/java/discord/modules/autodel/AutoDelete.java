@@ -15,7 +15,7 @@ import java.util.List;
 public class AutoDelete {
 
     public static final String[] CHANNELS = {"313423879567572992", "313423959682973697",
-    "296732748477890561"};
+    "296732748477890561", "309750962149392384"};
 
     @EventSubscriber
     public void onMessage(MessageReceivedEvent e){
@@ -25,6 +25,8 @@ public class AutoDelete {
                     IMessage[] message = new IMessage[1];
                     message[0] = e.getMessage();
                     e.getMessage().getChannel().getMessages().bulkDelete(new ArrayList<>(Arrays.asList(message)));
+                    if(!e.getMessage().isDeleted())
+                        e.getMessage().delete();
                 }catch(RateLimitException | DiscordException | MissingPermissionsException ex) {
                     ex.printStackTrace();
                 }
