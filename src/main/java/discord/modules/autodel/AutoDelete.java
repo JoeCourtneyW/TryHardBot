@@ -22,11 +22,7 @@ public class AutoDelete {
         for(String channel : CHANNELS){
             if(e.getMessage().getChannel().getID().equalsIgnoreCase(channel)){
                 try{
-                    IMessage[] message = new IMessage[1];
-                    message[0] = e.getMessage();
-                    e.getMessage().getChannel().getMessages().bulkDelete(new ArrayList<>(Arrays.asList(message)));
-                    if(!e.getMessage().isDeleted())
-                        e.getMessage().delete();
+                    e.getMessage().delete();
                 }catch(RateLimitException | DiscordException | MissingPermissionsException ex) {
                     ex.printStackTrace();
                 }

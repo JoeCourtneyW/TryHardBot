@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import discord.modules.autodel.AutoDelete;
 import discord.modules.command.Commands;
 import discord.modules.config.Configuration;
 import discord.modules.database.Database;
@@ -39,6 +40,7 @@ public class Main {
 		EventDispatcher dispatcher = INSTANCE.client.getDispatcher();
 		dispatcher.registerListener(INSTANCE);
 		dispatcher.registerListener(new Welcome());
+		dispatcher.registerListener(new AutoDelete());
 		activateModules();
 
 
