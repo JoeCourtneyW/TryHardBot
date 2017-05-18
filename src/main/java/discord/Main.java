@@ -92,12 +92,5 @@ public class Main {
 			//e.printStackTrace(); RateLimitError sometimes
 		}
 		databaseModule.load();
-		for(IUser u : client.getGuildByID("295679840659439638").getUsers()){
-			try {
-				u.addRole(client.getGuildByID("295679840659439638").getRolesByName("Rocket League").get(0));
-			}catch(Exception e ){
-				e.printStackTrace();
-				}
-		}
 	}
 }
