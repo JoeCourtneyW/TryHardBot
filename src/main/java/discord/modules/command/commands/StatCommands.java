@@ -430,7 +430,7 @@ public class StatCommands {
         UserValue.RANK.setFor(im.getAuthor(), "");
     }
 
-    private static String getUserFromURL(String url) {
+    public static String getUserFromURL(String url) {
         String regex = "https?://steamcommunity.com/[a-zA-Z]+/(.+)/?";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(url);
@@ -473,7 +473,7 @@ public class StatCommands {
         }
         return data;
     }
-    private static HashMap<Playlist, Rank> getRanksFor(String user, String system) {
+    public static HashMap<Playlist, Rank> getRanksFor(String user, String system) {
         HashMap<Playlist, Rank> ranks = new HashMap<>(); //TODO: Sort this hashmap so that the output is always in the same order
         try {
             String link = "https://rocketleague.tracker.network/profile/" + system + "/" + user;
@@ -556,7 +556,7 @@ public class StatCommands {
         return f;
     }
 
-    private static void removeOldRole(IUser user, IGuild guild) {
+    public static void removeOldRole(IUser user, IGuild guild) {
         List<IRole> roles = user.getRolesForGuild(guild);
         try {
             roleloop:
