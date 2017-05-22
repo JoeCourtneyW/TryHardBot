@@ -1,6 +1,6 @@
 package discord;
 
-import java.io.File;
+import java.io.*;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,9 +22,9 @@ import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.Image;
 
 public class Main {
-	//https://discordapp.com/api/oauth2/authorize?client_id=273659666054119425&scope=bot
-	private final static String PERSONAL_TOKEN = "MjczNjU5NjY2MDU0MTE5NDI1.C2mw-Q.5lI1_lHcWWx5oRfHPQtGcVV4tnA";
-	private final static String CLIENT_ID = "273659666054119425";
+	//https://discordapp.com/api/oauth2/authorize?client_id={}&scope=bot
+	private static String PERSONAL_TOKEN = "";
+	private static String CLIENT_ID = "";
 	private final static String SERVER_ADD_LINK = "https://discordapp.com/api/oauth2/authorize?client_id=" + CLIENT_ID
 			+ "&scope=bot";
 	public final static String HOME_DIR = "/root/tryhardbot/";
@@ -36,6 +36,8 @@ public class Main {
 	public static Database databaseModule;
 
 	public static void main(String[] args) {
+		if(!loadCredentials())
+			return;
 		INSTANCE = login();
 		EventDispatcher dispatcher = INSTANCE.client.getDispatcher();
 		dispatcher.registerListener(INSTANCE);
@@ -63,6 +65,23 @@ public class Main {
 		databaseModule.enable(INSTANCE.client);
 	}
 
+	private static boolean loadCredentials(){
+		try {
+			BufferedReader in = new BufferedReader(new FileReader(new File(HOME_DIR + "credentials.sly")));
+			String line;
+			while ((line = in.readLine()) != null) {
+				if(line.startsWith("PERSONAL_TOKEN:"))
+					PERSONAL_TOKEN = line.split(":")[1].trim();
+				else if(line.startsWith("CLIENT_ID"))
+					CLIENT_ID = line.split(":")[1].trim();
+			}
+			in.close();
+			return true;
+		} catch (IOException e) {
+			System.out.println("Malformed or nonexistent credentials.sly file");
+			return false;
+		}
+	}
 	private static IDiscordClient createClient(String token) { // Returns a new instance of the Discord client
 		ClientBuilder clientBuilder = new ClientBuilder(); // Creates the ClientBuilder instance
 		clientBuilder.withToken(token); // Adds the login info to the builder
