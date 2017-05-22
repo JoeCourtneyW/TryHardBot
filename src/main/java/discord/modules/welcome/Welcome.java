@@ -21,7 +21,7 @@ public class Welcome {
 		try {
 			if(g.getID().equalsIgnoreCase("295679840659439638")) {
 				user.addRole(g.getRolesByName("Set Platform").get(0));
-				user.addRole(g.getRolesByName("Set Games").get(0));
+				user.addRole(g.getRolesByName("Set Game").get(0));
 				user.addRole(g.getRolesByName("Set Rank").get(0));
 				user.addRole(g.getRolesByName("Set Region").get(0));
 			}
