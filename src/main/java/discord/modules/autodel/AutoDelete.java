@@ -39,7 +39,7 @@ public class AutoDelete {
     private static final String[] REGIONS = {"US-East", "US-West", "South America", "Europe", "Asia-SE Mainland", "Asia-East", "Middle-East", "OCEANIA"};
 
     private static final String[] GAMES = {"ROCKET LEAGUE", "RL", "ROCKETLEAGUE"};
-    
+
     @EventSubscriber
     public void onSetRole(MessageReceivedEvent e){
         String m = e.getMessage().getContent().trim();
@@ -102,6 +102,8 @@ public class AutoDelete {
             String role = highestRank.getStringBroad(); //Broad string matches the roles perfectly
             user.addRole(g.getRolesByName("S4 " + role).get(0));
 
+            MessageUtils.sendPrivateMessage("You have set your account to: " + acc + " on " + platform, user);
+
             UserValue.LINKED_ACCOUNT.setFor(user, acc);
             UserValue.RANK.setFor(user, highestRank.toString());
         }else if(e.getMessage().getChannel().getID().equalsIgnoreCase("316036444533555200")) { //set-region
@@ -119,12 +121,16 @@ public class AutoDelete {
             if(games.contains(m.toUpperCase())){
                 if(m.equalsIgnoreCase(GAMES[0]) || m.equalsIgnoreCase(GAMES[1]) || m.equalsIgnoreCase(GAMES[2])){
                     //ROCKET LEAGUE
-                    e.getMessage().getAuthor().addRole(e.getMessage().getGuild().getRolesByName("Rocket League").get(0));
+                    user.addRole(g.getRolesByName("Rocket League").get(0));
+                    MessageUtils.sendPrivateMessage("You have set your game to: " + "Rocket League", user);
+                    return;
                 }
             }
+            MessageUtils.sendPrivateMessage("Wrong format! Check the channel's help post", user);
         }
             } catch (MissingPermissionsException | RateLimitException | DiscordException en) {
                 MessageUtils.stackTrace(en);
+            MessageUtils.sendPrivateMessage("Uh oh, contact an administrator", user);
             }
     }
 
