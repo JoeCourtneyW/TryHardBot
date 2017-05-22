@@ -36,7 +36,7 @@ public class AutoDelete {
 
     private static final String[] PLATFORMS = {"PC", "STEAM", "PSN", "PS4", "PS", "PLAYSTATION", "XBOX"};
 
-    private static final String[] REGIONS = {"US-East", "US-West", "South America", "Europe", "Asia-SE Mainland", "Asia-East", "Middle-East", "OCEANIA"};
+    private static final String[] REGIONS = {"US-East", "US-West", "South America", "Europe", "Asia-SE Mainland", "Asia-East", "Middle-East", "Oceania", "Unknown"};
 
     private static final String[] GAMES = {"ROCKET LEAGUE", "RL", "ROCKETLEAGUE"};
 
@@ -85,6 +85,8 @@ public class AutoDelete {
             }
             Rank highestRank = Rank.UNRANKED;
             HashMap<Playlist, Rank> ranks;
+            if(platform.equalsIgnoreCase("PC"))
+                platform = "steam";
             ranks = StatCommands.getRanksFor(acc, platform);
             if (ranks == null) {
                 MessageUtils.sendPrivateMessage("The Rocket League API is currently down, try again later", user);
@@ -101,6 +103,7 @@ public class AutoDelete {
 
             String role = highestRank.getStringBroad(); //Broad string matches the roles perfectly
             user.addRole(g.getRolesByName("S4 " + role).get(0));
+            user.removeRole(g.getRolesByName("Set Rank").get(0));
 
             MessageUtils.sendPrivateMessage("You have set your account to: " + acc + " on " + platform, user);
 
@@ -110,6 +113,7 @@ public class AutoDelete {
             for(String region : REGIONS){
                 if(m.equalsIgnoreCase(region)){
                     user.addRole(g.getRolesByName(region).get(0));
+                    user.removeRole(g.getRolesByName("Set Region").get(0));
                     UserValue.REGION.setFor(user, region);
                     MessageUtils.sendPrivateMessage("You have set your region to: " + region, user);
                     return;
@@ -122,6 +126,7 @@ public class AutoDelete {
                 if(m.equalsIgnoreCase(GAMES[0]) || m.equalsIgnoreCase(GAMES[1]) || m.equalsIgnoreCase(GAMES[2])){
                     //ROCKET LEAGUE
                     user.addRole(g.getRolesByName("Rocket League").get(0));
+                    user.removeRole(g.getRolesByName("Set Game").get(0));
                     MessageUtils.sendPrivateMessage("You have set your game to: " + "Rocket League", user);
                     return;
                 }
