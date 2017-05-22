@@ -78,6 +78,7 @@ public class Main {
 			in.close();
 			return true;
 		} catch (IOException e) {
+			e.printStackTrace();
 			System.out.println("Malformed or nonexistent credentials.sly file");
 			return false;
 		}
